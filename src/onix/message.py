@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class ONIXAttributes(BaseModel):
@@ -62,9 +62,13 @@ class ONIXMessage(ONIXAttributes):
     An ONIX message contains:
     - A Header with sender/addressee information
     - Zero or more Product records
-    - Optionally a NoProduct flag (when no products are included)
+    - A NoProduct flag (automatically True when no products are included)
 
     The 'release' attribute indicates the ONIX version (e.g., "3.1").
+
+    Note:
+        The `products` list and `no_product` flag are mutually exclusive.
+        When `products` is empty, `no_product` is automatically set to True.
 
     Example usage:
         >>> from onix import ONIXMessage, Header, Product
@@ -79,3 +83,15 @@ class ONIXMessage(ONIXAttributes):
     header: Header
     products: list[Product] = []
     no_product: bool = False
+
+    @model_validator(mode="after")
+    def _validate_products_no_product(self) -> "ONIXMessage":
+        """Ensure products and no_product are mutually exclusive."""
+        if self.products and self.no_product:
+            raise ValueError(
+                "Cannot have both 'products' and 'no_product=True'. "
+                "Either provide products or set no_product=True, not both."
+            )
+        if not self.products:
+            self.no_product = True
+        return self
