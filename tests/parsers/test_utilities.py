@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, Field
 
-from onix.parsers import fields, tags
+from onix.parsers import fields
 from onix.parsers.xml import _element_to_dict, _parse_xml_string
 
 
@@ -11,6 +11,7 @@ class TestRegisterModelAndPluralMapping:
 
     def test_register_model_and_plural_mapping_and_clear_caches(self):
         """Model registration and cache clearing work correctly."""
+
         class Dummy(BaseModel):
             my_field: str = Field(
                 alias="MyField", json_schema_extra={"short_tag": "myfield"}

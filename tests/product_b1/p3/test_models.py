@@ -183,7 +183,9 @@ class TestEpubLicenseExpressionValidation:
     def test_expression_link_rejects_exceeding_max_length_300(self):
         """EpubLicenseExpressionLink cannot exceed 300 characters."""
         long_link = "http://" + "x" * 301
-        with pytest.raises(ValueError, match="(exceeds maximum length of 300|at most 300)"):
+        with pytest.raises(
+            ValueError, match="(exceeds maximum length of 300|at most 300)"
+        ):
             p3.EpubLicenseExpression(
                 epub_license_expression_type="10",
                 epub_license_expression_link=long_link,
@@ -355,7 +357,9 @@ class TestDescriptiveDetailValidation:
     # Product Form Details validation
     def test_product_form_details_must_have_correct_format(self):
         """ProductFormDetail must be 1 letter + 3 digits."""
-        with pytest.raises(ValueError, match="must be one letter followed by three digits"):
+        with pytest.raises(
+            ValueError, match="must be one letter followed by three digits"
+        ):
             p3.DescriptiveDetail(
                 product_composition="00",
                 product_form="BB",
