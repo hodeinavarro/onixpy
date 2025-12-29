@@ -1,4 +1,4 @@
-"""ONIX Code List 96: Currency code – based on ISO 4217."""
+"""ONIX Code List 96: Currency code - based on ISO 4217."""
 
 from onix.lists.models import CodeList, CodeListEntry
 
@@ -39,7 +39,7 @@ _ENTRIES = {
         list_number=96,
         code="ANG",
         heading="Netherlands Antillean Guilder",
-        notes="Curaçao, Sint Maarten. Replaced by the Caribbean Guilder (XCG) from April 2025. Deprecated – use only for historical prices that pre-date withdrawal",
+        notes="Curaçao, Sint Maarten. Replaced by the Caribbean Guilder (XCG) from April 2025. Deprecated - use only for historical prices that pre-date withdrawal",
         deprecated_version=69,
     ),
     "AOA": CodeListEntry(
@@ -58,7 +58,7 @@ _ENTRIES = {
         list_number=96,
         code="ATS",
         heading="Schilling",
-        notes="Austria. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Austria. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "AUD": CodeListEntry(
@@ -102,7 +102,7 @@ _ENTRIES = {
         list_number=96,
         code="BEF",
         heading="Belgian Franc",
-        notes="Belgium. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Belgium. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "BGL": CodeListEntry(
@@ -177,7 +177,7 @@ _ENTRIES = {
         list_number=96,
         code="BYR",
         heading="(Old) Belarussian Ruble",
-        notes="Belarus (prices normally quoted as integers). Deprecated – now replaced by new Belarussian Ruble (BYN): use only for historical prices that pre-date the introduction of the new Belarussian Ruble",
+        notes="Belarus (prices normally quoted as integers). Deprecated - now replaced by new Belarussian Ruble (BYN): use only for historical prices that pre-date the introduction of the new Belarussian Ruble",
         deprecated_version=44,
     ),
     "BYN": CodeListEntry(
@@ -247,7 +247,7 @@ _ENTRIES = {
         list_number=96,
         code="CUC",
         heading="Cuban Convertible Peso",
-        notes="Cuba (alternative currency from 1994, withdrawn 2021). Deprecated – use only for historical prices that pre-date withdrawal",
+        notes="Cuba (alternative currency from 1994, withdrawn 2021). Deprecated - use only for historical prices that pre-date withdrawal",
         added_version=4,
         deprecated_version=69,
     ),
@@ -267,7 +267,7 @@ _ENTRIES = {
         list_number=96,
         code="CYP",
         heading="Cyprus Pound",
-        notes="Cyprus. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Cyprus. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "CZK": CodeListEntry(
@@ -280,7 +280,7 @@ _ENTRIES = {
         list_number=96,
         code="DEM",
         heading="Mark",
-        notes="Germany. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Germany. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "DJF": CodeListEntry(
@@ -311,7 +311,7 @@ _ENTRIES = {
         list_number=96,
         code="EEK",
         heading="Kroon",
-        notes="Estonia. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Estonia. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "EGP": CodeListEntry(
@@ -330,7 +330,7 @@ _ENTRIES = {
         list_number=96,
         code="ESP",
         heading="Peseta",
-        notes="Spain. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro (prices normally quoted as integers)",
+        notes="Spain. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro (prices normally quoted as integers)",
         deprecated_version=42,
     ),
     "ETB": CodeListEntry(
@@ -350,7 +350,7 @@ _ENTRIES = {
         list_number=96,
         code="FIM",
         heading="Markka",
-        notes="Finland. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Finland. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "FJD": CodeListEntry(
@@ -369,7 +369,7 @@ _ENTRIES = {
         list_number=96,
         code="FRF",
         heading="Franc",
-        notes="France. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="France. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "GBP": CodeListEntry(
@@ -420,7 +420,7 @@ _ENTRIES = {
         list_number=96,
         code="GRD",
         heading="Drachma",
-        notes="Greece. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Greece. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "GTQ": CodeListEntry(
@@ -457,7 +457,7 @@ _ENTRIES = {
         list_number=96,
         code="HRK",
         heading="Kuna",
-        notes="Croatia. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Croatia. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=60,
     ),
     "HTG": CodeListEntry(
@@ -482,7 +482,7 @@ _ENTRIES = {
         list_number=96,
         code="IEP",
         heading="Punt",
-        notes="Ireland. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Ireland. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "ILS": CodeListEntry(
@@ -519,7 +519,7 @@ _ENTRIES = {
         list_number=96,
         code="ITL",
         heading="Lira",
-        notes="Italy. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro (prices normally quoted as integers)",
+        notes="Italy. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro (prices normally quoted as integers)",
         deprecated_version=42,
     ),
     "JMD": CodeListEntry(
@@ -628,21 +628,21 @@ _ENTRIES = {
         list_number=96,
         code="LTL",
         heading="Litus",
-        notes="Lithuania. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Lithuania. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "LUF": CodeListEntry(
         list_number=96,
         code="LUF",
         heading="Luxembourg Franc",
-        notes="Luxembourg. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro (prices normally quoted as integers)",
+        notes="Luxembourg. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro (prices normally quoted as integers)",
         deprecated_version=42,
     ),
     "LVL": CodeListEntry(
         list_number=96,
         code="LVL",
         heading="Latvian Lats",
-        notes="Latvia. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Latvia. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "LYD": CodeListEntry(
@@ -667,7 +667,7 @@ _ENTRIES = {
         list_number=96,
         code="MGA",
         heading="Malagasy Ariary",
-        notes="Madagascar (prices normally quoted with 0 or 1 decimal place – 1 iraimbilanja = Ar0.2)",
+        notes="Madagascar (prices normally quoted with 0 or 1 decimal place - 1 iraimbilanja = Ar0.2)",
         added_version=4,
     ),
     "MGF": CodeListEntry(
@@ -704,21 +704,21 @@ _ENTRIES = {
         list_number=96,
         code="MRO",
         heading="(Old) Ouguiya",
-        notes="Mauritania (prices normally quoted with 0 or 1 decimal place – 1 khoums = UM0.2). Was interchangeable with MRU (New) Ouguiya at rate of 10:1 until June 2018. Deprecated, use MRU instead",
+        notes="Mauritania (prices normally quoted with 0 or 1 decimal place - 1 khoums = UM0.2). Was interchangeable with MRU (New) Ouguiya at rate of 10:1 until June 2018. Deprecated, use MRU instead",
         deprecated_version=42,
     ),
     "MRU": CodeListEntry(
         list_number=96,
         code="MRU",
         heading="Ouguiya",
-        notes="Mauritania (prices normally quoted with 0 or 1 decimal place – 1 khoums = UM0.2). Replaced MRO (old) Ouguiya at rate of 10:1 in June 2018. Only for use in ONIX 3.0 or later",
+        notes="Mauritania (prices normally quoted with 0 or 1 decimal place - 1 khoums = UM0.2). Replaced MRO (old) Ouguiya at rate of 10:1 in June 2018. Only for use in ONIX 3.0 or later",
         added_version=40,
     ),
     "MTL": CodeListEntry(
         list_number=96,
         code="MTL",
         heading="Maltese Lira",
-        notes="Malta. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Malta. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "MUR": CodeListEntry(
@@ -780,7 +780,7 @@ _ENTRIES = {
         list_number=96,
         code="NLG",
         heading="Guilder",
-        notes="Netherlands. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Netherlands. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "NOK": CodeListEntry(
@@ -847,7 +847,7 @@ _ENTRIES = {
         list_number=96,
         code="PTE",
         heading="Escudo",
-        notes="Portugal. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Portugal. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "PYG": CodeListEntry(
@@ -956,14 +956,14 @@ _ENTRIES = {
         list_number=96,
         code="SIT",
         heading="Tolar",
-        notes="Slovenia. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Slovenia. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "SKK": CodeListEntry(
         list_number=96,
         code="SKK",
         heading="Slovak Koruna",
-        notes="Slovakia. Now replaced by the Euro (EUR). Deprecated – use only for historical prices that pre-date the introduction of the Euro",
+        notes="Slovakia. Now replaced by the Euro (EUR). Deprecated - use only for historical prices that pre-date the introduction of the Euro",
         deprecated_version=42,
     ),
     "SLE": CodeListEntry(
@@ -977,7 +977,7 @@ _ENTRIES = {
         list_number=96,
         code="SLL",
         heading="Leone",
-        notes="Sierra Leone (prices normally quoted as integers). Deprecated – gradually replaced by SLE from April 2022, but SLL Leone still usable until December 2023 (SLE is a redenomination of the Leone by a factor of 1,000)",
+        notes="Sierra Leone (prices normally quoted as integers). Deprecated - gradually replaced by SLE from April 2022, but SLL Leone still usable until December 2023 (SLE is a redenomination of the Leone by a factor of 1,000)",
         deprecated_version=58,
     ),
     "SOS": CodeListEntry(
@@ -1269,7 +1269,7 @@ _ENTRIES = {
 
 List96 = CodeList(
     number=96,
-    heading="Currency code – based on ISO 4217",
+    heading="Currency code - based on ISO 4217",
     scope_note="",
     entries=_ENTRIES,
 )

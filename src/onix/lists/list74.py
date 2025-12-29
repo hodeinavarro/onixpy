@@ -1,4 +1,4 @@
-"""ONIX Code List 74: Language – based on ISO 639-2/B."""
+"""ONIX Code List 74: Language - based on ISO 639-2/B."""
 
 from onix.lists.models import CodeList, CodeListEntry
 
@@ -642,7 +642,7 @@ _ENTRIES = {
         list_number=74,
         code="scr",
         heading="Croatian",
-        notes="Deprecated – use hrv",
+        notes="Deprecated - use hrv",
         deprecated_version=10,
     ),
     "cus": CodeListEntry(
@@ -1911,7 +1911,7 @@ _ENTRIES = {
         list_number=74,
         code="mol",
         heading="Moldavian; Moldovan",
-        notes="Deprecated – use rum",
+        notes="Deprecated - use rum",
         deprecated_version=10,
     ),
     "mkh": CodeListEntry(
@@ -2022,7 +2022,7 @@ _ENTRIES = {
         list_number=74,
         code="qls",
         heading="Neutral Latin American Spanish",
-        notes="ONIX local code, distinct and exclusively spoken variation of Spanish, not distinguished from spa (Spanish, Castilian) by ISO 639-3. Neutral Latin American Spanish should be considered a ‘shorthand’ for spa plus a ‘country code’ for Latin America – but prefer spa plus the relevant country code for specifically Mexican Spanish, Argentine (Rioplatense) Spanish, Puerto Rican Spanish etc. Neutral Latin American Spanish must only be used with audio material (including the audio tracks of TV, video and film) to indicate use of accent, vocabulary and construction suitable for broad use across Latin America. Only for use in ONIX 3.0 or later",
+        notes="ONIX local code, distinct and exclusively spoken variation of Spanish, not distinguished from spa (Spanish, Castilian) by ISO 639-3. Neutral Latin American Spanish should be considered a ‘shorthand’ for spa plus a ‘country code’ for Latin America - but prefer spa plus the relevant country code for specifically Mexican Spanish, Argentine (Rioplatense) Spanish, Puerto Rican Spanish etc. Neutral Latin American Spanish must only be used with audio material (including the audio tracks of TV, video and film) to indicate use of accent, vocabulary and construction suitable for broad use across Latin America. Only for use in ONIX 3.0 or later",
         added_version=43,
     ),
     "new": CodeListEntry(
@@ -2159,7 +2159,7 @@ _ENTRIES = {
     "odt": CodeListEntry(
         list_number=74,
         code="odt",
-        heading="Old Dutch / Old Low Franconian (ca. 400–1050)",
+        heading="Old Dutch / Old Low Franconian (ca. 400-1050)",
         notes="ONIX local code, equivalent to odt in ISO 639-3",
         added_version=32,
     ),
@@ -2520,7 +2520,7 @@ _ENTRIES = {
         list_number=74,
         code="scc",
         heading="Serbian",
-        notes="Deprecated – use srp",
+        notes="Deprecated - use srp",
         deprecated_version=10,
     ),
     "srp": CodeListEntry(
@@ -3258,7 +3258,7 @@ _ENTRIES = {
 
 List74 = CodeList(
     number=74,
-    heading="Language – based on ISO 639-2/B",
+    heading="Language - based on ISO 639-2/B",
     scope_note="",
     entries=_ENTRIES,
 )

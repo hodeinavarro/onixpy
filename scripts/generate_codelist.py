@@ -154,8 +154,25 @@ def generate_python_code(data: dict) -> str:
         escaped = s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
         return f'"{escaped}"'
 
+    def normalize(s: str | None) -> str | None:
+        """Replace special Unicode characters with ASCII equivalents."""
+        if s is None:
+            return None
+        # Curly quotes and apostrophes
+        s = s.replace("'", "'").replace("'", "'")
+        s = s.replace(""", '"').replace(""", '"')
+        # Dashes
+        s = s.replace("–", "-").replace("—", "-")
+        # Ellipsis
+        s = s.replace("…", "...")
+        # Non-breaking space
+        s = s.replace("\u00a0", " ")
+        # Other common replacements
+        s = s.replace("©", "(c)").replace("®", "(R)").replace("™", "(TM)")
+        return s
+
     lines = [
-        f'"""ONIX Code List {list_number}: {heading}."""',
+        f'"""ONIX Code List {list_number}: {normalize(heading)}."""',
         "",
         "from onix.lists.models import CodeList, CodeListEntry",
         "",
@@ -164,8 +181,8 @@ def generate_python_code(data: dict) -> str:
 
     for entry in entries:
         code = entry["code"]
-        heading_val = entry["heading"]
-        notes = entry["notes"]
+        heading_val = normalize(entry["heading"])
+        notes = normalize(entry["notes"])
         added = entry.get("added_version")
         deprecated = entry.get("deprecated_version")
 
@@ -185,7 +202,7 @@ def generate_python_code(data: dict) -> str:
     lines.append("")
     lines.append(f"List{list_number} = CodeList(")
     lines.append(f"    number={list_number},")
-    lines.append(f"    heading={escape(data['heading'])},")
+    lines.append(f"    heading={escape(normalize(data['heading']))},")
     lines.append('    scope_note="",')
     lines.append("    entries=_ENTRIES,")
     lines.append(")")
