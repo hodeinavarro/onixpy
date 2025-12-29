@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from pydantic import Field, field_validator
 
+from onix._base import ONIXModel
 from onix.lists import get_code
-from onix.product.base import ProductBase
 
 
-class TitleElement(ProductBase):
+class TitleElement(ONIXModel):
     """Title element component (part of TitleDetail).
 
     Elements:
@@ -33,7 +33,7 @@ class TitleElement(ProductBase):
     )
 
 
-class TitleDetail(ProductBase):
+class TitleDetail(ONIXModel):
     """Title detail composite.
 
     Provides detailed title information including title type and elements.
@@ -52,7 +52,7 @@ class TitleDetail(ProductBase):
     )
 
 
-class Contributor(ProductBase):
+class Contributor(ONIXModel):
     """Contributor composite.
 
     Describes a contributor to the product (author, editor, illustrator, etc.).
@@ -93,7 +93,7 @@ class Contributor(ProductBase):
         return v
 
 
-class Measure(ProductBase):
+class Measure(ONIXModel):
     """Measure composite.
 
     Provides measurement information for the product (e.g., height, width, weight).
@@ -133,7 +133,7 @@ class Measure(ProductBase):
         return v
 
 
-class Extent(ProductBase):
+class Extent(ONIXModel):
     """Extent composite.
 
     Provides extent information (page count, duration, etc.).
@@ -155,7 +155,7 @@ class Extent(ProductBase):
     )
 
 
-class Collection(ProductBase):
+class Collection(ONIXModel):
     """Collection composite.
 
     Groups products into a collection or series.
@@ -189,7 +189,7 @@ class Collection(ProductBase):
         return v
 
 
-class DescriptiveDetail(ProductBase):
+class DescriptiveDetail(ONIXModel):
     """DescriptiveDetail composite (Product Block 2).
 
     Contains descriptive information about the product including titles,

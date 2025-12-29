@@ -15,7 +15,6 @@ src/onix/
 │   └── header.py     # Header and nested composites with validation
 ├── product/
 │   ├── __init__.py   # Exports Product, ProductIdentifier
-│   ├── base.py       # ProductBase with shared ONIX attributes
 │   └── product.py    # Product and ProductIdentifier models
 ├── parsers/
 │   ├── __init__.py   # Parser API: json_to_message, xml_to_message, etc.
@@ -232,7 +231,7 @@ A valid ONIX Product requires (per RNG schema):
 
 ### ProductIdentifier Structure
 ```python
-class ProductIdentifier(ProductBase):
+class ProductIdentifier(ONIXModel):
     product_id_type: str = Field(alias="ProductIDType")  # List 5
     id_type_name: str | None = Field(default=None, alias="IDTypeName")
     id_value: str = Field(alias="IDValue")

@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from onix.product.base import ONIXAttributes, ProductBase
+from onix._base import ONIXModel
 
 
-class ProductIdentifier(ONIXAttributes):
+class ProductIdentifier(ONIXModel):
     """Product identifier composite.
 
     Identifies a product using a standard or proprietary scheme.
@@ -43,7 +43,7 @@ class ProductIdentifier(ONIXAttributes):
     )
 
 
-class Product(ProductBase):
+class Product(ONIXModel):
     """ONIX product record.
 
     Contains all metadata for a single product (book, ebook, etc.).

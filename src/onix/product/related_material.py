@@ -7,10 +7,10 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from onix.product.base import ProductBase
+from onix._base import ONIXModel
 
 
-class RelatedProduct(ProductBase):
+class RelatedProduct(ONIXModel):
     """RelatedProduct composite.
 
     Identifies a related product and its relationship type.
@@ -34,7 +34,7 @@ class RelatedProduct(ProductBase):
     )
 
 
-class RelatedMaterial(ProductBase):
+class RelatedMaterial(ONIXModel):
     """RelatedMaterial composite (Product Block 7).
 
     Contains information about materials related to the product including

@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from pydantic import Field, field_validator
 
+from onix._base import ONIXModel
 from onix.lists import get_code
-from onix.product.base import ProductBase
 
 
-class Publisher(ProductBase):
+class Publisher(ONIXModel):
     """Publisher composite.
 
     Describes a publisher or imprint.
@@ -40,7 +40,7 @@ class Publisher(ProductBase):
         return v
 
 
-class PublishingDate(ProductBase):
+class PublishingDate(ONIXModel):
     """PublishingDate composite.
 
     Provides publication date information.
@@ -58,7 +58,7 @@ class PublishingDate(ProductBase):
     )
 
 
-class PublishingDetail(ProductBase):
+class PublishingDetail(ONIXModel):
     """PublishingDetail composite (Product Block 3).
 
     Contains publishing information including publishers, imprints, and
