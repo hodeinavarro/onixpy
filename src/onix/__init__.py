@@ -29,12 +29,23 @@ Example:
     >>> message = xml_to_message("/path/to/message.xml")
 """
 
-from onix.message import Header, ONIXAttributes, ONIXMessage
+from onix.header import (
+    Addressee,
+    AddresseeIdentifier,
+    Header,
+    Sender,
+    SenderIdentifier,
+)
+from onix.message import ONIXAttributes, ONIXMessage
 from onix.product import Product
 
 __all__ = [
     "ONIXMessage",
     "Header",
+    "Sender",
+    "SenderIdentifier",
+    "Addressee",
+    "AddresseeIdentifier",
     "Product",
     "ONIXAttributes",
 ]

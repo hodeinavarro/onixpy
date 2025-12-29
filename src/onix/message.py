@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
+from onix.header import Header
 from onix.product import Product
 
 
@@ -26,16 +27,6 @@ class ONIXAttributes(BaseModel):
     datestamp: str | None = None
     sourcename: str | None = None
     sourcetype: str | None = None
-
-
-class Header(ONIXAttributes):
-    """ONIX message header.
-
-    Contains information about the sender, addressee, and message metadata.
-    This is a placeholder; fields will be expanded as needed.
-    """
-
-    pass
 
 
 class ONIXMessage(ONIXAttributes):

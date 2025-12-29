@@ -21,6 +21,8 @@ from onix.parsers import (
     xml_to_message,
 )
 
+from .conftest import make_header, make_header_dict
+
 
 class TestTagResolver:
     """Tests for tag name resolution."""
@@ -53,7 +55,7 @@ class TestJSONParser:
 
     def test_parse_from_dict(self):
         """Parse message from a dict object."""
-        data = {"header": {}, "products": []}
+        data = {"header": make_header_dict(), "products": []}
         msg = json_to_message(data)
 
         assert isinstance(msg, ONIXMessage)
@@ -62,7 +64,7 @@ class TestJSONParser:
 
     def test_parse_from_dict_with_products(self):
         """Parse message with products from dict."""
-        data = {"header": {}, "products": [{}, {}]}
+        data = {"header": make_header_dict(), "products": [{}, {}]}
         msg = json_to_message(data)
 
         assert len(msg.products) == 2
@@ -71,7 +73,8 @@ class TestJSONParser:
     def test_parse_from_file(self, tmp_path: Path):
         """Parse message from a JSON file."""
         json_file = tmp_path / "message.json"
-        json_file.write_text('{"header": {}, "products": [{}]}')
+        data = {"header": make_header_dict(), "products": [{}]}
+        json_file.write_text(json.dumps(data))
 
         msg = json_to_message(str(json_file))
 
@@ -85,22 +88,24 @@ class TestJSONParser:
 
     def test_parse_from_iterable(self):
         """Parse and combine messages from iterable of dicts."""
+        header1 = make_header_dict()
+        header1["message_note"] = "Source1"
+        header2 = make_header_dict()
+        header2["message_note"] = "Source2"
         messages = [
-            {"header": {"sourcename": "Source1"}, "products": [{}]},
-            {"header": {"sourcename": "Source2"}, "products": [{}, {}]},
+            {"header": header1, "products": [{}]},
+            {"header": header2, "products": [{}, {}]},
         ]
         msg = json_to_message(iter(messages))
 
         # Uses first message's header, combines all products
-        assert msg.header.sourcename == "Source1"
+        assert msg.header.message_note == "Source1"
         assert len(msg.products) == 3
 
     def test_parse_empty_iterable(self):
-        """Handle empty iterable gracefully."""
-        msg = json_to_message(iter([]))
-
-        assert isinstance(msg, ONIXMessage)
-        assert msg.products == []
+        """Empty iterable should fail validation (no valid header)."""
+        with pytest.raises(Exception):  # ValidationError from Pydantic
+            json_to_message(iter([]))
 
 
 class TestJSONSerializer:
@@ -108,7 +113,7 @@ class TestJSONSerializer:
 
     def test_message_to_dict(self):
         """Convert message to dict."""
-        msg = ONIXMessage(header=Header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[Product()])
         data = message_to_dict(msg)
 
         assert "header" in data
@@ -117,7 +122,7 @@ class TestJSONSerializer:
 
     def test_message_to_json(self):
         """Serialize message to JSON string."""
-        msg = ONIXMessage(header=Header(), products=[])
+        msg = ONIXMessage(header=make_header(), products=[])
         json_str = message_to_json(msg)
 
         parsed = json.loads(json_str)
@@ -125,7 +130,7 @@ class TestJSONSerializer:
 
     def test_save_json(self, tmp_path: Path):
         """Save message to JSON file."""
-        msg = ONIXMessage(header=Header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[Product()])
         json_file = tmp_path / "output.json"
 
         save_json(msg, json_file)
@@ -138,7 +143,7 @@ class TestJSONSerializer:
         """JSON roundtrip preserves data."""
         original = ONIXMessage(
             release="3.1",
-            header=Header(sourcename="TestSource"),
+            header=make_header(message_note="TestSource"),
             products=[Product(), Product()],
         )
 
@@ -146,7 +151,7 @@ class TestJSONSerializer:
         restored = json_to_message(json.loads(json_str))
 
         assert restored.release == original.release
-        assert restored.header.sourcename == original.header.sourcename
+        assert restored.header.message_note == original.header.message_note
         assert len(restored.products) == len(original.products)
 
 
@@ -157,7 +162,12 @@ class TestXMLParser:
         """Parse message from XML string."""
         xml_str = """<?xml version="1.0"?>
         <ONIXMessage release="3.1">
-            <Header></Header>
+            <Header>
+                <Sender>
+                    <SenderName>Test Publisher</SenderName>
+                </Sender>
+                <SentDateTime>20231201T120000Z</SentDateTime>
+            </Header>
         </ONIXMessage>
         """
         msg = xml_to_message(xml_str)
@@ -169,7 +179,12 @@ class TestXMLParser:
         """Parse message with products from XML string."""
         xml_str = """<?xml version="1.0"?>
         <ONIXMessage release="3.1">
-            <Header></Header>
+            <Header>
+                <Sender>
+                    <SenderName>Test Publisher</SenderName>
+                </Sender>
+                <SentDateTime>20231201T120000Z</SentDateTime>
+            </Header>
             <Product></Product>
             <Product></Product>
         </ONIXMessage>
@@ -183,7 +198,12 @@ class TestXMLParser:
         xml_file = tmp_path / "message.xml"
         xml_file.write_text("""<?xml version="1.0"?>
         <ONIXMessage release="3.1">
-            <Header></Header>
+            <Header>
+                <Sender>
+                    <SenderName>Test Publisher</SenderName>
+                </Sender>
+                <SentDateTime>20231201T120000Z</SentDateTime>
+            </Header>
             <Product></Product>
         </ONIXMessage>
         """)
@@ -204,7 +224,7 @@ class TestXMLSerializer:
 
     def test_message_to_xml(self):
         """Convert message to XML Element."""
-        msg = ONIXMessage(header=Header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[Product()])
         root = message_to_xml(msg)
 
         assert root.tag == "ONIXMessage"
@@ -212,7 +232,7 @@ class TestXMLSerializer:
 
     def test_message_to_xml_string(self):
         """Serialize message to XML string."""
-        msg = ONIXMessage(header=Header(), products=[])
+        msg = ONIXMessage(header=make_header(), products=[])
         xml_str = message_to_xml_string(msg)
 
         assert "ONIXMessage" in xml_str
@@ -220,14 +240,14 @@ class TestXMLSerializer:
 
     def test_message_to_xml_with_short_names(self):
         """Serialize with short tag names."""
-        msg = ONIXMessage(header=Header(), products=[])
+        msg = ONIXMessage(header=make_header(), products=[])
         root = message_to_xml(msg, short_names=True)
 
         assert root.tag == "ONIXmessage"
 
     def test_save_xml(self, tmp_path: Path):
         """Save message to XML file."""
-        msg = ONIXMessage(header=Header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[Product()])
         xml_file = tmp_path / "output.xml"
 
         save_xml(msg, xml_file)
@@ -241,7 +261,7 @@ class TestXMLSerializer:
         """XML roundtrip preserves data."""
         original = ONIXMessage(
             release="3.1",
-            header=Header(),
+            header=make_header(),
             products=[Product(), Product()],
         )
 
@@ -257,14 +277,14 @@ class TestShortNamesFlag:
 
     def test_json_parse_with_short_names(self):
         """Parse JSON with short tag names."""
-        data = {"header": {}, "products": []}
+        data = {"header": make_header_dict(), "products": []}
         msg = json_to_message(data, short_names=True)
 
         assert isinstance(msg, ONIXMessage)
 
     def test_json_serialize_with_short_names(self):
         """Serialize JSON with short tag names."""
-        msg = ONIXMessage(header=Header(), products=[])
+        msg = ONIXMessage(header=make_header(), products=[])
         data = message_to_dict(msg, short_names=True)
 
         # Keys should be converted to short names where applicable
@@ -274,7 +294,12 @@ class TestShortNamesFlag:
         """Parse XML expecting short tag names."""
         xml_str = """<?xml version="1.0"?>
         <ONIXmessage release="3.1">
-            <header></header>
+            <header>
+                <sender>
+                    <SenderName>Test Publisher</SenderName>
+                </sender>
+                <SentDateTime>20231201T120000Z</SentDateTime>
+            </header>
         </ONIXmessage>
         """
         msg = xml_to_message(xml_str, short_names=True)
@@ -283,7 +308,7 @@ class TestShortNamesFlag:
 
     def test_xml_serialize_with_short_names(self):
         """Serialize XML with short tag names."""
-        msg = ONIXMessage(header=Header(), products=[])
+        msg = ONIXMessage(header=make_header(), products=[])
         xml_str = message_to_xml_string(msg, short_names=True)
 
         assert "ONIXmessage" in xml_str

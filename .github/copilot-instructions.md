@@ -9,7 +9,10 @@ Python library for parsing and working with ONIX for Books metadata (publishing 
 ```
 src/onix/
 ├── __init__.py       # Public API: ONIXMessage, Header, Product, ONIXAttributes
-├── message.py        # ONIXMessage, Header, ONIXAttributes models
+├── message.py        # ONIXMessage, ONIXAttributes models
+├── header/
+│   ├── __init__.py   # Exports Header, Sender, Addressee, etc.
+│   └── header.py     # Header and nested composites with validation
 ├── product/
 │   ├── __init__.py   # Exports Product
 │   ├── base.py       # ProductBase with shared ONIX attributes
@@ -22,18 +25,24 @@ src/onix/
 └── lists/
     ├── __init__.py   # Code list registry and lookup functions
     ├── models.py     # CodeList, CodeListEntry dataclasses
-    └── list44.py     # List 44: Name identifier type
+    ├── list44.py     # List 44: Name identifier type
+    ├── list58.py     # List 58: Price type
+    ├── list74.py     # List 74: Language code (ISO 639-2/B)
+    └── list96.py     # List 96: Currency code (ISO 4217)
 ```
 
 ### Key Design Decisions
 - **Reference names by default**: All parsers/serializers use ONIX reference tag names (e.g., `ONIXMessage`, `Header`). Short names (`ONIXmessage`, `header`, `x507`) require explicit `short_names=True`.
-- **Tag mapping**: Minimal internal mapping in `parsers/tags.py`; will expand from ONIX spec later.
+- **Strict validation**: Code list values are validated against their respective lists. Invalid codes raise `ValidationError`.
+- **Tag mapping**: XML parser converts CamelCase tags to snake_case field names; serializer does the inverse.
 - **XML library**: Prefers `lxml` if available, falls back to stdlib `xml.etree`.
-- **Code lists**: Placeholder in `onix.lists` with `get_list(n)` / `get_code(n, code)` API.
+- **Code lists**: Registry in `onix.lists` with `get_list(n)` / `get_code(n, code)` API.
 
 ### Core Models
-- `ONIXMessage`: Root container with `header`, `products`, `release`, optional `no_product`
-- `Header`: Message metadata (sender, addressee) - placeholder for fields
+- `ONIXMessage`: Root container with `header`, `products`, `release`, auto-set `no_product`
+- `Header`: Message metadata with nested `Sender` (required), `Addressee` (optional), defaults
+- `Sender`: Sender info with optional `SenderIdentifier` list (validated against List 44)
+- `Addressee`: Addressee info with optional `AddresseeIdentifier` list
 - `Product`: Product record - placeholder for ONIX blocks 1-8
 - `ONIXAttributes`: Mixin for shared attributes (`datestamp`, `sourcename`, `sourcetype`)
 
@@ -65,11 +74,14 @@ uv run ruff format .
 
 ### Creating Messages
 ```python
-from onix import ONIXMessage, Header, Product
+from onix import ONIXMessage, Header, Product, Sender
 
 msg = ONIXMessage(
     release="3.1",
-    header=Header(sourcename="MyPublisher"),
+    header=Header(
+        sender=Sender(sender_name="MyPublisher"),
+        sent_date_time="20231201T120000Z",
+    ),
     products=[Product(), Product()],
 )
 ```

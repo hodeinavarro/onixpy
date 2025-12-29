@@ -323,8 +323,16 @@ def _element_to_dict(
         child_tag = child.tag if not normalize_tags else to_reference_tag(child.tag)
         child_key = _tag_to_field_name(child_tag)
 
-        # Check if this is a known complex element (Header, Product, etc.)
-        is_complex_element = child_key in ("header", "products", "no_product")
+        # Check if this is a known complex element
+        is_complex_element = child_key in (
+            "header",
+            "products",
+            "no_product",
+            "sender",
+            "sender_identifiers",
+            "addressees",
+            "addressee_identifiers",
+        )
 
         if len(child) == 0 and not child.attrib and not is_complex_element:
             # Leaf element with text content
@@ -338,8 +346,14 @@ def _element_to_dict(
         children[child_key].append(value)
 
     # Flatten single-value lists, except for known list fields
+    list_fields = (
+        "products",
+        "sender_identifiers",
+        "addressees",
+        "addressee_identifiers",
+    )
     for key, values in children.items():
-        if key in ("products",) or len(values) > 1:
+        if key in list_fields or len(values) > 1:
             result[key] = values
         else:
             result[key] = values[0]
@@ -348,17 +362,88 @@ def _element_to_dict(
 
 
 def _tag_to_field_name(tag: str) -> str:
-    """Convert XML tag to Python field name.
+    """Convert XML tag to Python field name (snake_case).
 
-    Handles special cases like ONIXMessage root attributes.
+    Handles special cases and converts CamelCase to snake_case.
     """
+    import re
+
     # Map specific tags to field names
     field_map = {
         "Header": "header",
         "Product": "products",
         "NoProduct": "no_product",
+        # Header elements
+        "Sender": "sender",
+        "SenderIdentifier": "sender_identifiers",
+        "SenderIDType": "sender_id_type",
+        "IDTypeName": "id_type_name",
+        "IDValue": "id_value",
+        "SenderName": "sender_name",
+        "ContactName": "contact_name",
+        "TelephoneNumber": "telephone_number",
+        "EmailAddress": "email_address",
+        "Addressee": "addressees",
+        "AddresseeIdentifier": "addressee_identifiers",
+        "AddresseeIDType": "addressee_id_type",
+        "AddresseeName": "addressee_name",
+        "MessageNumber": "message_number",
+        "MessageRepeat": "message_repeat",
+        "SentDateTime": "sent_date_time",
+        "MessageNote": "message_note",
+        "DefaultLanguageOfText": "default_language_of_text",
+        "DefaultPriceType": "default_price_type",
+        "DefaultCurrencyCode": "default_currency_code",
     }
-    return field_map.get(tag, tag.lower())
+
+    if tag in field_map:
+        return field_map[tag]
+
+    # Convert CamelCase to snake_case for unknown tags
+    # Insert underscore before uppercase letters (except at start)
+    snake = re.sub(r"(?<!^)(?=[A-Z])", "_", tag).lower()
+    return snake
+
+
+def _field_name_to_tag(field_name: str) -> str:
+    """Convert Python field name (snake_case) to XML tag (CamelCase).
+
+    Inverse of _tag_to_field_name.
+    """
+    # Map field names back to XML tags
+    field_to_tag = {
+        "header": "Header",
+        "products": "Product",  # Note: singular in XML
+        "no_product": "NoProduct",
+        # Header elements
+        "sender": "Sender",
+        "sender_identifiers": "SenderIdentifier",  # Singular in XML
+        "sender_id_type": "SenderIDType",
+        "id_type_name": "IDTypeName",
+        "id_value": "IDValue",
+        "sender_name": "SenderName",
+        "contact_name": "ContactName",
+        "telephone_number": "TelephoneNumber",
+        "email_address": "EmailAddress",
+        "addressees": "Addressee",  # Singular in XML
+        "addressee_identifiers": "AddresseeIdentifier",  # Singular in XML
+        "addressee_id_type": "AddresseeIDType",
+        "addressee_name": "AddresseeName",
+        "message_number": "MessageNumber",
+        "message_repeat": "MessageRepeat",
+        "sent_date_time": "SentDateTime",
+        "message_note": "MessageNote",
+        "default_language_of_text": "DefaultLanguageOfText",
+        "default_price_type": "DefaultPriceType",
+        "default_currency_code": "DefaultCurrencyCode",
+    }
+
+    if field_name in field_to_tag:
+        return field_to_tag[field_name]
+
+    # Convert snake_case to CamelCase for unknown fields
+    parts = field_name.split("_")
+    return "".join(part.title() for part in parts)
 
 
 def _dict_to_element(
@@ -384,7 +469,9 @@ def _dict_to_element(
         if key in ("datestamp", "sourcename", "sourcetype"):
             continue
 
-        child_tag = key.title() if not short_names else to_short_tag(key.title())
+        # Convert field name to XML tag
+        ref_tag = _field_name_to_tag(key)
+        child_tag = ref_tag if not short_names else to_short_tag(ref_tag)
 
         if isinstance(value, dict):
             child = _dict_to_element(
