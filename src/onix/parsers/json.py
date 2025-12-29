@@ -20,16 +20,6 @@ from typing import Any, Iterable
 
 from onix.message import ONIXMessage
 
-# Mapping for JSON field names (lowercase) when short_names=True
-_JSON_SHORT_TO_REFERENCE: dict[str, str] = {
-    "onixmessage": "ONIXMessage",
-    "header": "header",  # Already lowercase
-    "product": "products",  # Short form uses singular
-    "products": "products",
-    "x507": "no_product",
-    "noproduct": "no_product",
-}
-
 
 def json_to_message(
     source: str | PathLike[str] | dict[str, Any] | Iterable[dict[str, Any]],
@@ -191,29 +181,21 @@ def _normalize_input(
 
 
 def _normalize_json_keys(data: dict[str, Any]) -> dict[str, Any]:
-    """Normalize JSON keys to match Pydantic model field names.
+    """Convert short tag names to reference names for Pydantic parsing.
 
-    Used when short_names=True to ensure keys like 'Header' become 'header'.
+    When short_names=True, we receive short tags (e.g., 'x507') which need to be
+    converted to reference names (e.g., 'NoProduct') that Pydantic can recognize
+    via Field(alias=...).
     """
-    # Map common variations to expected field names
-    key_map = {
-        "Header": "header",
-        "header": "header",
-        "Product": "products",
-        "product": "products",
-        "products": "products",
-        "NoProduct": "no_product",
-        "noproduct": "no_product",
-        "x507": "no_product",
-        "release": "release",
-    }
+    from onix.parsers.tags import to_reference_tag
 
     def normalize(obj: Any) -> Any:
         if isinstance(obj, dict):
             result = {}
             for k, v in obj.items():
-                # Use mapped key if available, otherwise lowercase
-                new_key = key_map.get(k, k.lower() if k[0].isupper() else k)
+                # Convert short tag to reference tag (e.g., x507 -> NoProduct)
+                # to_reference_tag returns the input unchanged if not found
+                new_key = to_reference_tag(k)
                 result[new_key] = normalize(v)
             return result
         if isinstance(obj, list):
@@ -223,27 +205,11 @@ def _normalize_json_keys(data: dict[str, Any]) -> dict[str, Any]:
     return normalize(data)
 
 
-def _convert_short_to_reference(data: dict[str, Any]) -> dict[str, Any]:
-    """Convert short tag names to reference names in a dict.
-
-    Placeholder implementation - will use tags.py resolver.
-    """
-    from onix.parsers.tags import to_reference_tag
-
-    def convert(obj: Any) -> Any:
-        if isinstance(obj, dict):
-            return {to_reference_tag(k): convert(v) for k, v in obj.items()}
-        if isinstance(obj, list):
-            return [convert(item) for item in obj]
-        return obj
-
-    return convert(data)
-
-
 def _convert_reference_to_short(data: dict[str, Any]) -> dict[str, Any]:
     """Convert reference tag names to short tags in a dict.
 
-    Placeholder implementation - will use tags.py resolver.
+    Uses the tag resolver from tags.py to convert ONIX reference names
+    (e.g., 'Header', 'NoProduct') to short tags (e.g., 'header', 'x507').
     """
     from onix.parsers.tags import to_short_tag
 

@@ -6,9 +6,10 @@ containing all metadata for a single product.
 
 from __future__ import annotations
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from onix._base import ONIXModel
+from onix.lists import List1, List5
 
 
 class ProductIdentifier(ONIXModel):
@@ -33,20 +34,35 @@ class ProductIdentifier(ONIXModel):
 
     product_id_type: str = Field(
         alias="ProductIDType",
+        json_schema_extra={"short_tag": "b221"},
+        max_length=2,
     )
     id_type_name: str | None = Field(
         default=None,
         alias="IDTypeName",
+        json_schema_extra={"short_tag": "b233"},
+        max_length=100,
     )
     id_value: str = Field(
         alias="IDValue",
+        json_schema_extra={"short_tag": "b244"},
+        max_length=300,
     )
 
+    @field_validator("product_id_type")
+    @classmethod
+    def validate_product_id_type(cls, v: str) -> str:
+        """Validate product_id_type is in List 5."""
+        if v not in List5:
+            raise ValueError(f"Invalid product_id_type '{v}': must be from List 5")
+        return v
 
-class Product(ONIXModel):
-    """ONIX product record.
 
-    Contains all metadata for a single product (book, ebook, etc.).
+class ProductBase(ONIXModel):
+    """ONIX product record base.
+
+    Contains minimal required metadata for a product.
+    Extended in product/__init__.py with block fields after imports.
 
     Required fields for a minimal valid Product:
     - record_reference: Unique identifier for this record
@@ -80,13 +96,26 @@ class Product(ONIXModel):
     # Record metadata (gp.record_metadata)
     record_reference: str = Field(
         alias="RecordReference",
+        json_schema_extra={"short_tag": "a001"},
+        max_length=100,
     )
     notification_type: str = Field(
         alias="NotificationType",
+        json_schema_extra={"short_tag": "a002"},
+        max_length=2,
     )
 
     # Product identifiers (gp.product_numbers)
     product_identifiers: list[ProductIdentifier] = Field(
         alias="ProductIdentifier",
+        json_schema_extra={"short_tag": "productidentifier"},
         min_length=1,
     )
+
+    @field_validator("notification_type")
+    @classmethod
+    def validate_notification_type(cls, v: str) -> str:
+        """Validate notification_type is in List 1."""
+        if v not in List1:
+            raise ValueError(f"Invalid notification_type '{v}': must be from List 1")
+        return v

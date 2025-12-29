@@ -88,3 +88,8 @@ test_odoo.py
 scripts/.venv/
 scripts/.ruff_cache/
 scripts/__pycache__/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml

@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
-from onix import Header, Product, ProductIdentifier, Sender
+from onix import Header, ONIXMessage, Product, ProductIdentifier, Sender
+from onix.parsers import message_to_xml_string
+from onix.validation.rng import validate_xml_string
 
 
 @pytest.fixture
@@ -90,3 +94,137 @@ def make_product_dict(
     }
     defaults.update(kwargs)
     return defaults
+
+
+def make_message(
+    release: str = "3.1",
+    header: Header | dict | None = None,
+    products: list[Product] | list[dict] | None = None,
+    no_product: bool = False,
+    **kwargs,
+) -> ONIXMessage:
+    """Create a valid ONIXMessage with optional overrides.
+
+    Provides sensible defaults for required fields.
+    """
+    if header is None:
+        header = make_header()
+    if products is None and not no_product:
+        products = [make_product()]
+
+    return ONIXMessage(
+        release=release,
+        header=header,
+        products=products or [],
+        no_product=no_product,
+        **kwargs,
+    )
+
+
+def make_message_dict(
+    ref: bool = True,
+    minimal: bool = True,
+    **kwargs,
+) -> dict:
+    """Create a valid ONIXMessage dict for JSON/XML parsing tests.
+
+    Args:
+        ref: If True, use reference tag names. If False, use short tag names.
+        minimal: If True, create minimal message. If False, include extra fields.
+        **kwargs: Override any default fields.
+
+    Returns:
+        Dictionary suitable for json_to_message or xml_to_message.
+    """
+    if ref:
+        header_key = "header"
+        products_key = "products"
+        sender_key = "sender"
+        sender_name_key = "sender_name"
+        sent_date_time_key = "sent_date_time"
+    else:
+        header_key = "header"  # composite short tags same as ref
+        products_key = "product"
+        sender_key = "sender"  # composite short tags same as ref
+        sender_name_key = "x298"
+        sent_date_time_key = "x307"
+
+    defaults = {
+        header_key: {
+            sender_key: {sender_name_key: "Test Publisher"},
+            sent_date_time_key: "20231201T120000Z",
+        },
+        products_key: [make_product_dict()],
+    }
+
+    if not minimal:
+        # Add optional fields for non-minimal messages
+        defaults[header_key]["message_number" if ref else "m180"] = "1234"
+        defaults[header_key]["message_repeat" if ref else "m181"] = "1"
+
+    defaults.update(kwargs)
+    return defaults
+
+
+def make_message_xml(ref: bool = True, minimal: bool = True, **kwargs) -> str:
+    """Create a valid ONIXMessage XML string.
+
+    Args:
+        ref: If True, use reference tag names. If False, use short tag names.
+        minimal: If True, create minimal message. If False, include extra fields.
+        **kwargs: Override any default fields for make_message.
+
+    Returns:
+        XML string representation of the message.
+    """
+    msg = make_message(**kwargs) if minimal else make_message(minimal=False, **kwargs)
+    return message_to_xml_string(msg, short_names=not ref)
+
+
+def assert_valid_rng(xml_str: str, short: bool = False) -> None:
+    """Assert that XML string validates against ONIX RNG schema.
+
+    Args:
+        xml_str: XML string to validate
+        short: If True, convert short tags to reference before validating
+
+    Raises:
+        AssertionError: If validation fails
+    """
+    if short:
+        # Parse with short names, serialize with reference names for validation
+        from onix.parsers import message_to_xml_string, xml_to_message
+
+        msg = xml_to_message(xml_str, short_names=True)
+        xml_str = message_to_xml_string(msg, short_names=False)
+
+    try:
+        validate_xml_string(xml_str)
+    except Exception as e:
+        pytest.fail(f"RNG validation failed: {e}")
+
+
+def save_and_validate(
+    xml_str: str,
+    tmp_path: Path,
+    short: bool = False,
+) -> Path:
+    """Save XML string to file and validate against RNG schema.
+
+    Args:
+        xml_str: XML string to save and validate
+        tmp_path: Temporary directory path from pytest fixture
+        short: If True, convert short tags to reference before validating
+
+    Returns:
+        Path to the saved file
+
+    Raises:
+        AssertionError: If validation fails
+    """
+    xml_file = tmp_path / "test_message.xml"
+    xml_file.write_text(xml_str)
+
+    assert_valid_rng(xml_str, short=short)
+
+    return xml_file

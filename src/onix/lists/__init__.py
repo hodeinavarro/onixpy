@@ -22,7 +22,10 @@ will be imported from the ONIX specification later.
 from __future__ import annotations
 
 from onix.lists.list1 import List1, NotificationOrUpdateType
+from onix.lists.list2 import List2, ProductComposition
 from onix.lists.list5 import List5, ProductIdentifierType
+from onix.lists.list9 import List9, ProductClassificationType
+from onix.lists.list12 import List12, TradeCategory
 from onix.lists.list15 import List15, TitleType
 from onix.lists.list17 import ContributorRole, List17
 from onix.lists.list18 import List18, NameType
@@ -36,16 +39,33 @@ from onix.lists.list58 import List58, PriceType
 from onix.lists.list73 import List73, WebsiteRole
 from onix.lists.list74 import LanguageCode, List74
 from onix.lists.list75 import ContributorDateRole, List75
+from onix.lists.list79 import List79, ProductFormFeatureType
+from onix.lists.list80 import List80, ProductPackagingType
+from onix.lists.list81 import List81, ProductContentType
+from onix.lists.list91 import CountryBasedOnIso31661, List91
 from onix.lists.list96 import CurrencyCode, List96
+from onix.lists.list98 import BindingOrPageEdgeColor, List98
+from onix.lists.list99 import List99, SpecialCoverMaterial
+from onix.lists.list144 import EpublicationTechnicalProtection, List144
+from onix.lists.list145 import List145, UsageType
+from onix.lists.list146 import List146, UsageStatus
+from onix.lists.list147 import List147, UnitOfUsage
 from onix.lists.list148 import CollectionType, List148
 from onix.lists.list149 import List149, TitleElementLevel
+from onix.lists.list150 import List150, ProductForm
 from onix.lists.list151 import ContributorPlaceRelator, List151
+from onix.lists.list175 import List175, ProductFormDetail
+from onix.lists.list218 import LicenseExpressionType, List218
+from onix.lists.list260 import EpublicationLicenseDateRole, List260
 from onix.lists.models import CodeList, CodeListEntry
 
 # Registry of all code lists (by number)
 _CODE_LISTS: dict[int, CodeList] = {
     1: List1,
+    2: List2,
     5: List5,
+    9: List9,
+    12: List12,
     15: List15,
     17: List17,
     18: List18,
@@ -59,10 +79,24 @@ _CODE_LISTS: dict[int, CodeList] = {
     73: List73,
     74: List74,
     75: List75,
+    79: List79,
+    80: List80,
+    81: List81,
+    91: List91,
     96: List96,
+    98: List98,
+    99: List99,
+    144: List144,
+    145: List145,
+    146: List146,
+    147: List147,
     148: List148,
     149: List149,
+    150: List150,
     151: List151,
+    175: List175,
+    218: List218,
+    260: List260,
 }
 
 
@@ -119,7 +153,10 @@ __all__ = [
     "CodeListEntry",
     # Lists by number
     "List1",
+    "List2",
     "List5",
+    "List9",
+    "List12",
     "List15",
     "List17",
     "List18",
@@ -133,13 +170,30 @@ __all__ = [
     "List73",
     "List74",
     "List75",
+    "List79",
+    "List80",
+    "List81",
+    "List91",
     "List96",
+    "List98",
+    "List99",
+    "List144",
+    "List145",
+    "List146",
+    "List147",
     "List148",
     "List149",
+    "List150",
     "List151",
+    "List175",
+    "List218",
+    "List260",
     # Lists by name
     "NotificationOrUpdateType",
+    "ProductComposition",
     "ProductIdentifierType",
+    "ProductClassificationType",
+    "TradeCategory",
     "TitleType",
     "ContributorRole",
     "NameType",
@@ -153,10 +207,24 @@ __all__ = [
     "WebsiteRole",
     "LanguageCode",
     "ContributorDateRole",
+    "ProductFormFeatureType",
+    "ProductPackagingType",
+    "ProductContentType",
+    "CountryBasedOnIso31661",
     "CurrencyCode",
+    "BindingOrPageEdgeColor",
+    "SpecialCoverMaterial",
+    "EpublicationTechnicalProtection",
+    "UsageType",
+    "UsageStatus",
+    "UnitOfUsage",
     "CollectionType",
     "TitleElementLevel",
+    "ProductForm",
     "ContributorPlaceRelator",
+    "ProductFormDetail",
+    "LicenseExpressionType",
+    "EpublicationLicenseDateRole",
     # Functions
     "get_list",
     "get_code",

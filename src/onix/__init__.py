@@ -53,11 +53,19 @@ from onix.product import (
     Contributor,
     ContributorDate,
     ContributorPlace,
+    DescriptiveDetail,
+    EpubLicense,
+    EpubLicenseDate,
+    EpubLicenseExpression,
+    EpubUsageConstraint,
+    EpubUsageLimit,
     Extent,
     Measure,
     NameIdentifier,
     Prize,
     Product,
+    ProductClassification,
+    ProductFormFeature,
     ProductIdentifier,
     ProfessionalAffiliation,
     Publisher,
@@ -84,8 +92,21 @@ __all__ = [
     "Product",
     "ProductIdentifier",
     # Block 1 composites
+    # P.3 Product form
+    "DescriptiveDetail",
+    "ProductFormFeature",
+    "EpubUsageLimit",
+    "EpubUsageConstraint",
+    "EpubLicenseDate",
+    "EpubLicenseExpression",
+    "EpubLicense",
+    "ProductClassification",
+    # P.5 Collection
+    "Collection",
+    # P.6 Product title detail
     "TitleDetail",
     "TitleElement",
+    # P.7 Authorship
     "Contributor",
     "NameIdentifier",
     "AlternativeName",
@@ -95,9 +116,9 @@ __all__ = [
     "Prize",
     "Website",
     "ContributorPlace",
+    # P.11 Extents and other content
     "Measure",
     "Extent",
-    "Collection",
     # PublishingDetail composites
     "PublishingDetail",
     "Publisher",

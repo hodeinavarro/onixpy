@@ -19,6 +19,7 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "lxml-stubs>=0.5.1",
+    "pytest-cov>=7.0.0",
     "pytest>=9.0.1",
     "ruff>=0.14.10",
     "ty>=0.0.7",
@@ -38,6 +39,30 @@ markers = [
     "slow: marks tests as slow",
     "integration: marks tests as integration tests",
 ]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+precision = 2
+show_missing = true
+
+[tool.coverage.html]
+directory = "htmlcov"
 
 [tool.ty]
 # ty is experimental - these settings may change

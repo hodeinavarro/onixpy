@@ -121,7 +121,7 @@ class TestAddresseeIdentifierValidation:
         """Invalid List 44 code should raise ValidationError."""
         with pytest.raises(ValidationError) as exc_info:
             AddresseeIdentifier(
-                addressee_id_type="999",  # Invalid code
+                addressee_id_type="99",  # Invalid List 44 code (2 digits but not in list)
                 id_value="ABC123",
             )
 
@@ -229,7 +229,7 @@ class TestHeaderMessageNumberValidation:
         assert header.message_number == "12345678"
 
     def test_invalid_9_digits_raises_error(self):
-        """9 digit numeric string should raise ValidationError."""
+        """9 digit numeric string should raise ValidationError (Pydantic max_length)."""
         with pytest.raises(ValidationError) as exc_info:
             Header(
                 sender=Sender(sender_name="TestSender"),
@@ -238,8 +238,8 @@ class TestHeaderMessageNumberValidation:
             )
 
         errors = exc_info.value.errors()
-        assert any("Invalid MessageNumber" in str(e) for e in errors)
-        assert any("must be numeric string up to 8 digits" in str(e) for e in errors)
+        # Pydantic's max_length constraint error
+        assert any("at most 8 characters" in str(e) for e in errors)
 
     def test_non_numeric_raises_error(self):
         """Non-numeric string should raise ValidationError."""
@@ -285,7 +285,7 @@ class TestHeaderMessageRepeatValidation:
         assert header.message_repeat == "1234"
 
     def test_invalid_5_digits_raises_error(self):
-        """5 digit numeric string should raise ValidationError."""
+        """5 digit numeric string should raise ValidationError (Pydantic max_length)."""
         with pytest.raises(ValidationError) as exc_info:
             Header(
                 sender=Sender(sender_name="TestSender"),
@@ -294,8 +294,8 @@ class TestHeaderMessageRepeatValidation:
             )
 
         errors = exc_info.value.errors()
-        assert any("Invalid MessageRepeat" in str(e) for e in errors)
-        assert any("must be numeric string up to 4 digits" in str(e) for e in errors)
+        # Pydantic's max_length constraint error
+        assert any("at most 4 characters" in str(e) for e in errors)
 
     def test_non_numeric_raises_error(self):
         """Non-numeric string should raise ValidationError."""

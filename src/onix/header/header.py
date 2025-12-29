@@ -30,19 +30,27 @@ class SenderIdentifier(ONIXModel):
 
     sender_id_type: str = Field(
         alias="SenderIDType",
+        json_schema_extra={"short_tag": "m379"},
     )
     id_type_name: str | None = Field(
         default=None,
         alias="IDTypeName",
+        max_length=100,
+        json_schema_extra={"short_tag": "b233"},
     )
     id_value: str = Field(
         alias="IDValue",
+        json_schema_extra={"short_tag": "b244"},
     )
 
     @field_validator("sender_id_type")
     @classmethod
     def validate_sender_id_type(cls, v: str) -> str:
-        """Validate sender_id_type is a valid List 44 code."""
+        """Validate sender_id_type is fixed-length 2 digits and valid List 44 code."""
+        if len(v) != 2 or not v.isdigit():
+            raise ValueError(
+                f"Invalid SenderIDType format: '{v}' must be exactly 2 digits"
+            )
         if get_code(44, v) is None:
             raise ValueError(f"Invalid SenderIDType: '{v}' is not a valid List 44 code")
         return v
@@ -72,22 +80,31 @@ class Sender(ONIXModel):
     sender_identifiers: list[SenderIdentifier] = Field(
         default_factory=list,
         alias="SenderIdentifier",
+        json_schema_extra={"short_tag": "senderidentifier"},
     )
     sender_name: str | None = Field(
         default=None,
         alias="SenderName",
+        max_length=50,
+        json_schema_extra={"short_tag": "x298"},
     )
     contact_name: str | None = Field(
         default=None,
         alias="ContactName",
+        max_length=300,
+        json_schema_extra={"short_tag": "x299"},
     )
     telephone_number: str | None = Field(
         default=None,
         alias="TelephoneNumber",
+        max_length=20,
+        json_schema_extra={"short_tag": "j270"},
     )
     email_address: str | None = Field(
         default=None,
         alias="EmailAddress",
+        max_length=100,
+        json_schema_extra={"short_tag": "j272"},
     )
 
     @model_validator(mode="after")
@@ -118,19 +135,27 @@ class AddresseeIdentifier(ONIXModel):
 
     addressee_id_type: str = Field(
         alias="AddresseeIDType",
+        json_schema_extra={"short_tag": "m380"},
     )
     id_type_name: str | None = Field(
         default=None,
         alias="IDTypeName",
+        max_length=100,
+        json_schema_extra={"short_tag": "b233"},
     )
     id_value: str = Field(
         alias="IDValue",
+        json_schema_extra={"short_tag": "b244"},
     )
 
     @field_validator("addressee_id_type")
     @classmethod
     def validate_addressee_id_type(cls, v: str) -> str:
-        """Validate addressee_id_type is a valid List 44 code."""
+        """Validate addressee_id_type is fixed-length 2 digits and valid List 44 code."""
+        if len(v) != 2 or not v.isdigit():
+            raise ValueError(
+                f"Invalid AddresseeIDType format: '{v}' must be exactly 2 digits"
+            )
         if get_code(44, v) is None:
             raise ValueError(
                 f"Invalid AddresseeIDType: '{v}' is not a valid List 44 code"
@@ -164,22 +189,31 @@ class Addressee(ONIXModel):
     addressee_identifiers: list[AddresseeIdentifier] = Field(
         default_factory=list,
         alias="AddresseeIdentifier",
+        json_schema_extra={"short_tag": "addresseeidentifier"},
     )
     addressee_name: str | None = Field(
         default=None,
         alias="AddresseeName",
+        max_length=50,
+        json_schema_extra={"short_tag": "x300"},
     )
     contact_name: str | None = Field(
         default=None,
         alias="ContactName",
+        max_length=300,
+        json_schema_extra={"short_tag": "x299"},
     )
     telephone_number: str | None = Field(
         default=None,
         alias="TelephoneNumber",
+        max_length=20,
+        json_schema_extra={"short_tag": "j270"},
     )
     email_address: str | None = Field(
         default=None,
         alias="EmailAddress",
+        max_length=100,
+        json_schema_extra={"short_tag": "j272"},
     )
 
 
@@ -203,37 +237,49 @@ class Header(ONIXModel):
 
     sender: Sender = Field(
         alias="Sender",
+        json_schema_extra={"short_tag": "sender"},
     )
     addressees: list[Addressee] = Field(
         default_factory=list,
         alias="Addressee",
+        json_schema_extra={"short_tag": "addressee"},
     )
     message_number: str | None = Field(
         default=None,
         alias="MessageNumber",
+        max_length=8,
+        json_schema_extra={"short_tag": "m180"},
     )
     message_repeat: str | None = Field(
         default=None,
         alias="MessageRepeat",
+        max_length=4,
+        json_schema_extra={"short_tag": "m181"},
     )
     sent_date_time: str = Field(
         alias="SentDateTime",
+        json_schema_extra={"short_tag": "x307"},
     )
     message_note: str | None = Field(
         default=None,
         alias="MessageNote",
+        max_length=500,
+        json_schema_extra={"short_tag": "m183"},
     )
     default_language_of_text: str | None = Field(
         default=None,
         alias="DefaultLanguageOfText",
+        json_schema_extra={"short_tag": "defaultlanguageoftext"},
     )
     default_price_type: str | None = Field(
         default=None,
         alias="DefaultPriceType",
+        json_schema_extra={"short_tag": "defaultpricetype"},
     )
     default_currency_code: str | None = Field(
         default=None,
         alias="DefaultCurrencyCode",
+        json_schema_extra={"short_tag": "defaultcurrencycode"},
     )
 
     @field_validator("sent_date_time")
@@ -266,23 +312,17 @@ class Header(ONIXModel):
     @field_validator("message_number")
     @classmethod
     def validate_message_number(cls, v: str | None) -> str | None:
-        """Validate message_number is numeric string up to 8 digits."""
-        if v is not None:
-            if not v.isdigit() or len(v) > 8:
-                raise ValueError(
-                    "Invalid MessageNumber: must be numeric string up to 8 digits"
-                )
+        """Validate message_number is numeric string (max 8 digits handled by Field)."""
+        if v is not None and not v.isdigit():
+            raise ValueError("Invalid MessageNumber: must be numeric string")
         return v
 
     @field_validator("message_repeat")
     @classmethod
     def validate_message_repeat(cls, v: str | None) -> str | None:
-        """Validate message_repeat is numeric string up to 4 digits."""
-        if v is not None:
-            if not v.isdigit() or len(v) > 4:
-                raise ValueError(
-                    "Invalid MessageRepeat: must be numeric string up to 4 digits"
-                )
+        """Validate message_repeat is numeric string (max 4 digits handled by Field)."""
+        if v is not None and not v.isdigit():
+            raise ValueError("Invalid MessageRepeat: must be numeric string")
         return v
 
     @field_validator("default_language_of_text")

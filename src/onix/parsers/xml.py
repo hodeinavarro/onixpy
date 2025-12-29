@@ -38,6 +38,9 @@ from onix.parsers.fields import (
     tag_to_field_name,
 )
 from onix.parsers.tags import to_reference_tag, to_short_tag
+
+# Import Product after all composites to avoid circular imports
+from onix.product import Product
 from onix.product.b1 import (
     AffiliationIdentifier,
     AlternativeName,
@@ -45,10 +48,18 @@ from onix.product.b1 import (
     Contributor,
     ContributorDate,
     ContributorPlace,
+    DescriptiveDetail,
+    EpubLicense,
+    EpubLicenseDate,
+    EpubLicenseExpression,
+    EpubUsageConstraint,
+    EpubUsageLimit,
     Extent,
     Measure,
     NameIdentifier,
     Prize,
+    ProductClassification,
+    ProductFormFeature,
     ProfessionalAffiliation,
     TitleDetail,
     TitleElement,
@@ -56,7 +67,7 @@ from onix.product.b1 import (
 )
 from onix.product.b4 import Publisher, PublishingDate, PublishingDetail
 from onix.product.b5 import RelatedMaterial, RelatedProduct
-from onix.product.product import Product, ProductIdentifier
+from onix.product.product import ProductBase, ProductIdentifier
 
 if TYPE_CHECKING:
     from lxml.etree import _Element as Element
@@ -77,7 +88,8 @@ def _register_models() -> None:
     register_model(AddresseeIdentifier)
 
     # Product and identifiers
-    register_model(Product)
+    register_model(ProductBase)
+    register_model(Product)  # Register the full Product class with block fields
     register_model(ProductIdentifier)
 
     # Block 1: Product description composites
@@ -95,6 +107,15 @@ def _register_models() -> None:
     register_model(Measure)
     register_model(Extent)
     register_model(Collection)
+    # P.3 Product form composites
+    register_model(DescriptiveDetail)
+    register_model(ProductFormFeature)
+    register_model(EpubUsageLimit)
+    register_model(EpubUsageConstraint)
+    register_model(EpubLicenseDate)
+    register_model(EpubLicenseExpression)
+    register_model(EpubLicense)
+    register_model(ProductClassification)
 
     # Block 4: PublishingDetail composites
     register_model(PublishingDetail)
@@ -138,6 +159,23 @@ def _register_models() -> None:
     register_plural_mapping("Measure", "measures")
     register_plural_mapping("Extent", "extents")
     register_plural_mapping("Collection", "collections")
+    # P.3 Product form plural mappings
+    register_plural_mapping("ProductFormFeature", "product_form_features")
+    register_plural_mapping("ProductFormDetail", "product_form_details")
+    register_plural_mapping("ProductFormDescription", "product_form_descriptions")
+    register_plural_mapping("ProductContentType", "product_content_types")
+    register_plural_mapping("EpubTechnicalProtection", "epub_technical_protections")
+    register_plural_mapping("EpubUsageLimit", "epub_usage_limit")
+    register_plural_mapping("EpubUsageConstraint", "epub_usage_constraints")
+    register_plural_mapping("EpubLicenseDate", "epub_license_date")
+    register_plural_mapping("EpubLicenseExpression", "epub_license_expression")
+    register_plural_mapping("EpubLicense", "epub_licenses")
+    register_plural_mapping("EpubLicenseName", "epub_license_name")
+    register_plural_mapping("MapScale", "map_scales")
+    register_plural_mapping("ProductClassification", "product_classifications")
+    register_plural_mapping(
+        "ProductFormFeatureDescription", "product_form_feature_description"
+    )
 
     # PublishingDetail plural mappings
     register_plural_mapping("Publisher", "publishers")
@@ -426,25 +464,29 @@ def _element_to_dict(
             # Clark notation: {namespace}localname
             child_tag = child_tag.split("}")[-1]
 
-        if normalize_tags:
-            child_tag = to_reference_tag(child_tag)
-
-        child_key = tag_to_field_name(child_tag)
+        # Always normalize short tags to reference tags before converting to field names
+        # This ensures both short and reference tag inputs work correctly
+        reference_tag = to_reference_tag(child_tag)
+        child_key = tag_to_field_name(reference_tag)
 
         # Determine if element has complex content
         has_children = len(child) > 0
         has_attributes = bool(child.attrib)
         has_text = bool(child.text and child.text.strip())
 
-        # If element has children or attributes, it's complex
-        # If it has no children, no attributes, but also no text, treat as empty complex (e.g., <Product/>)
-        is_complex = has_children or has_attributes or not has_text
-
-        if not is_complex:
+        # Special case: empty tags for boolean fields should be True
+        # e.g., <NoProduct/> or <x507/> means no_product=True
+        if not has_children and not has_attributes and not has_text:
+            if child_key == "no_product":
+                value = True
+            else:
+                # Other empty tags are complex elements with no data
+                value = _element_to_dict(child, normalize_tags=normalize_tags)
+        elif not has_children and not has_attributes:
             # Leaf element with text content only
             value = child.text or ""
         else:
-            # Complex element (including empty ones like <Product/>)
+            # Complex element with children or attributes
             value = _element_to_dict(child, normalize_tags=normalize_tags)
 
         if child_key not in children:

@@ -56,6 +56,10 @@ class CodeList:
         """Get an entry by code value."""
         return self.entries.get(code)
 
+    def __contains__(self, code: str) -> bool:
+        """Check if a code exists in this list."""
+        return code in self.entries
+
     def __iter__(self):
         """Iterate over entries."""
         return iter(self.entries.values())

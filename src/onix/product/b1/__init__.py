@@ -3,6 +3,16 @@
 Exports all Block 1 (Product description) composites.
 """
 
+from onix.product.b1.p3 import (
+    DescriptiveDetail,
+    EpubLicense,
+    EpubLicenseDate,
+    EpubLicenseExpression,
+    EpubUsageConstraint,
+    EpubUsageLimit,
+    ProductClassification,
+    ProductFormFeature,
+)
 from onix.product.b1.p5 import Collection
 from onix.product.b1.p6 import TitleDetail, TitleElement
 from onix.product.b1.p7 import (
@@ -19,6 +29,15 @@ from onix.product.b1.p7 import (
 from onix.product.b1.p11 import Extent, Measure
 
 __all__ = [
+    # P.3 Product form composites
+    "DescriptiveDetail",
+    "ProductFormFeature",
+    "EpubUsageLimit",
+    "EpubUsageConstraint",
+    "EpubLicenseDate",
+    "EpubLicenseExpression",
+    "EpubLicense",
+    "ProductClassification",
     # P.5 Collection
     "Collection",
     # P.6 Product title detail

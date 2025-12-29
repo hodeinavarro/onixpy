@@ -26,6 +26,8 @@ Example:
     ... )
 """
 
+from pydantic import Field
+
 from onix.product.b1 import (
     AffiliationIdentifier,
     AlternativeName,
@@ -33,10 +35,18 @@ from onix.product.b1 import (
     Contributor,
     ContributorDate,
     ContributorPlace,
+    DescriptiveDetail,
+    EpubLicense,
+    EpubLicenseDate,
+    EpubLicenseExpression,
+    EpubUsageConstraint,
+    EpubUsageLimit,
     Extent,
     Measure,
     NameIdentifier,
     Prize,
+    ProductClassification,
+    ProductFormFeature,
     ProfessionalAffiliation,
     TitleDetail,
     TitleElement,
@@ -44,15 +54,56 @@ from onix.product.b1 import (
 )
 from onix.product.b4 import Publisher, PublishingDate, PublishingDetail
 from onix.product.b5 import RelatedMaterial, RelatedProduct
-from onix.product.product import Product, ProductIdentifier
+from onix.product.product import ProductBase, ProductIdentifier
+
+
+class Product(ProductBase):
+    """ONIX Product with all block fields.
+
+    Extends ProductBase with optional fields for each ONIX block.
+    """
+
+    # Block 1: DescriptiveDetail (Product form and content)
+    descriptive_detail: DescriptiveDetail | None = Field(
+        default=None,
+        alias="DescriptiveDetail",
+        json_schema_extra={"short_tag": "descriptivedetail"},
+    )
+
+    # Block 4: PublishingDetail (Publisher, imprint, dates)
+    publishing_detail: PublishingDetail | None = Field(
+        default=None,
+        alias="PublishingDetail",
+        json_schema_extra={"short_tag": "publishingdetail"},
+    )
+
+    # Block 5: RelatedMaterial (Related products, works)
+    related_material: RelatedMaterial | None = Field(
+        default=None,
+        alias="RelatedMaterial",
+        json_schema_extra={"short_tag": "relatedmaterial"},
+    )
+
 
 __all__ = [
     "Product",
     "ProductIdentifier",
-    # DescriptiveDetail composites
+    # Block 1 composites
+    # P.3 Product form
     "DescriptiveDetail",
+    "ProductFormFeature",
+    "EpubUsageLimit",
+    "EpubUsageConstraint",
+    "EpubLicenseDate",
+    "EpubLicenseExpression",
+    "EpubLicense",
+    "ProductClassification",
+    # P.5 Collection
+    "Collection",
+    # P.6 Product title detail
     "TitleDetail",
     "TitleElement",
+    # P.7 Authorship
     "Contributor",
     "NameIdentifier",
     "AlternativeName",
@@ -62,14 +113,14 @@ __all__ = [
     "Prize",
     "Website",
     "ContributorPlace",
+    # P.11 Extents and other content
     "Measure",
     "Extent",
-    "Collection",
-    # PublishingDetail composites
+    # Block 4: PublishingDetail composites
     "PublishingDetail",
     "Publisher",
     "PublishingDate",
-    # RelatedMaterial composites
+    # Block 5: RelatedMaterial composites
     "RelatedMaterial",
     "RelatedProduct",
 ]

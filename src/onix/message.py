@@ -54,14 +54,17 @@ class ONIXMessage(ONIXAttributes):
     release: str = "3.1"
     header: Header = Field(
         alias="Header",
+        json_schema_extra={"short_tag": "header"},
     )
     products: list[Product] = Field(
         default_factory=list,
         alias="Product",
+        json_schema_extra={"short_tag": "product"},
     )
     no_product: bool = Field(
         default=False,
         alias="NoProduct",
+        json_schema_extra={"short_tag": "x507"},
     )
 
     @model_validator(mode="after")
