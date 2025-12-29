@@ -6,7 +6,6 @@ Provides dataclasses for representing ONIX code lists and their entries.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -26,10 +25,10 @@ class CodeListEntry:
     list_number: int
     code: str
     heading: str
-    notes: Optional[str] = None
-    added_version: Optional[int] = None
-    modified_version: Optional[int] = None
-    deprecated_version: Optional[int] = None
+    notes: str | None = None
+    added_version: int | None = None
+    modified_version: int | None = None
+    deprecated_version: int | None = None
 
     @property
     def is_deprecated(self) -> bool:
@@ -53,7 +52,7 @@ class CodeList:
     scope_note: str
     entries: dict[str, CodeListEntry]
 
-    def get(self, code: str) -> Optional[CodeListEntry]:
+    def get(self, code: str) -> CodeListEntry | None:
         """Get an entry by code value."""
         return self.entries.get(code)
 

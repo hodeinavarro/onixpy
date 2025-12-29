@@ -7,8 +7,6 @@ controlled via parser/serializer options.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel, ConfigDict, model_validator
 
 
@@ -23,9 +21,9 @@ class ONIXAttributes(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    datestamp: Optional[str] = None
-    sourcename: Optional[str] = None
-    sourcetype: Optional[str] = None
+    datestamp: str | None = None
+    sourcename: str | None = None
+    sourcetype: str | None = None
 
 
 class Header(ONIXAttributes):

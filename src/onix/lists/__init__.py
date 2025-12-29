@@ -21,8 +21,6 @@ will be imported from the ONIX specification later.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from onix.lists.list44 import List44, NameIdentifierType
 from onix.lists.models import CodeList, CodeListEntry
 
@@ -32,7 +30,7 @@ _CODE_LISTS: dict[int, CodeList] = {
 }
 
 
-def get_list(list_number: int) -> Optional[CodeList]:
+def get_list(list_number: int) -> CodeList | None:
     """Get a code list by number.
 
     Args:
@@ -49,7 +47,7 @@ def get_list(list_number: int) -> Optional[CodeList]:
     return _CODE_LISTS.get(list_number)
 
 
-def get_code(list_number: int, code: str) -> Optional[CodeListEntry]:
+def get_code(list_number: int, code: str) -> CodeListEntry | None:
     """Get a specific code entry from a list.
 
     Args:

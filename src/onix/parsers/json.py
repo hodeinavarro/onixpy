@@ -16,10 +16,9 @@ from __future__ import annotations
 import json
 from os import PathLike
 from pathlib import Path
-from typing import Any, Iterable, Union
+from typing import Any, Iterable
 
 from onix.message import ONIXMessage
-
 
 # Mapping for JSON field names (lowercase) when short_names=True
 _JSON_SHORT_TO_REFERENCE: dict[str, str] = {
@@ -33,7 +32,7 @@ _JSON_SHORT_TO_REFERENCE: dict[str, str] = {
 
 
 def json_to_message(
-    source: Union[str, PathLike[str], dict[str, Any], Iterable[dict[str, Any]]],
+    source: str | PathLike[str] | dict[str, Any] | Iterable[dict[str, Any]],
     *,
     short_names: bool = False,
 ) -> ONIXMessage:
@@ -124,7 +123,7 @@ def message_to_dict(
 
 def save_json(
     message: ONIXMessage,
-    path: Union[str, PathLike[str]],
+    path: str | PathLike[str],
     *,
     short_names: bool = False,
     indent: int | None = 2,
@@ -143,7 +142,7 @@ def save_json(
 
 
 def _normalize_input(
-    source: Union[str, PathLike[str], dict[str, Any], Iterable[dict[str, Any]]],
+    source: str | PathLike[str] | dict[str, Any] | Iterable[dict[str, Any]],
 ) -> dict[str, Any]:
     """Normalize various input types to a single dict."""
     # Path-like string

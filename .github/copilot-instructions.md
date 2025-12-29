@@ -104,6 +104,13 @@ print(isni.heading)  # "ISNI"
 
 ## Project Conventions
 
+### Python 3.10+ Style
+- Use `X | None` instead of `Optional[X]`
+- Use `A | B` instead of `Union[A, B]`
+- Use `list[X]`, `dict[K, V]` instead of `List[X]`, `Dict[K, V]`
+- Use `from __future__ import annotations` for forward references
+- Pattern matching (`match`/`case`) where it improves readability
+
 ### Test Structure
 - Test files: `test_*.py` in `tests/`
 - Test classes: `Test*` prefix

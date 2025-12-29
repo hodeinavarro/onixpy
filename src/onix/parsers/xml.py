@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Iterable, Union
+from typing import TYPE_CHECKING, Any, Iterable
 from xml.etree import ElementTree as ET
 
 from onix.message import ONIXMessage
@@ -40,13 +40,13 @@ if TYPE_CHECKING:
     if HAS_LXML:
         from lxml.etree import _Element as LxmlElement
 
-        ElementType = Union[Element, LxmlElement]
+        ElementType = Element | LxmlElement
     else:
         ElementType = Element
 
 
 def xml_to_message(
-    source: Union[str, PathLike[str], "ElementType", Iterable["ElementType"]],
+    source: str | PathLike[str] | "ElementType" | Iterable["ElementType"],
     *,
     short_names: bool = False,
 ) -> ONIXMessage:
@@ -183,7 +183,7 @@ def message_to_xml_string(
 
 def save_xml(
     message: ONIXMessage,
-    path: Union[str, PathLike[str]],
+    path: str | PathLike[str],
     *,
     short_names: bool = False,
     xml_declaration: bool = True,
@@ -212,7 +212,7 @@ def save_xml(
 
 
 def _normalize_input(
-    source: Union[str, PathLike[str], "ElementType", Iterable["ElementType"]],
+    source: str | PathLike[str] | "ElementType" | Iterable["ElementType"],
 ) -> "ElementType":
     """Normalize various input types to a single Element."""
     # Check if it's an Element type (stdlib or lxml)
