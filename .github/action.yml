@@ -1,0 +1,6 @@
+name: onix
+description: Python library for parsing and working with ONIX for Books metadata
+
+branding:
+  icon: book-open
+  color: blue
