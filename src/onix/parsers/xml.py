@@ -38,7 +38,22 @@ from onix.parsers.fields import (
     tag_to_field_name,
 )
 from onix.parsers.tags import to_reference_tag, to_short_tag
-from onix.product import Product, ProductIdentifier
+from onix.product import (
+    Collection,
+    Contributor,
+    DescriptiveDetail,
+    Extent,
+    Measure,
+    Product,
+    ProductIdentifier,
+    Publisher,
+    PublishingDate,
+    PublishingDetail,
+    RelatedMaterial,
+    RelatedProduct,
+    TitleDetail,
+    TitleElement,
+)
 
 if TYPE_CHECKING:
     from lxml.etree import _Element as Element
@@ -50,14 +65,35 @@ if TYPE_CHECKING:
 # This extracts aliases from model definitions
 def _register_models() -> None:
     """Register all ONIX models with the field mapping module."""
+    # Message and header models
     register_model(ONIXMessage)
     register_model(Header)
     register_model(Sender)
     register_model(SenderIdentifier)
     register_model(Addressee)
     register_model(AddresseeIdentifier)
+
+    # Product and identifiers
     register_model(Product)
     register_model(ProductIdentifier)
+
+    # DescriptiveDetail composites
+    register_model(DescriptiveDetail)
+    register_model(TitleDetail)
+    register_model(TitleElement)
+    register_model(Contributor)
+    register_model(Measure)
+    register_model(Extent)
+    register_model(Collection)
+
+    # PublishingDetail composites
+    register_model(PublishingDetail)
+    register_model(Publisher)
+    register_model(PublishingDate)
+
+    # RelatedMaterial composites
+    register_model(RelatedMaterial)
+    register_model(RelatedProduct)
 
     # Register plural mappings for list fields that use singular XML tags
     register_plural_mapping("Product", "products")
@@ -65,6 +101,21 @@ def _register_models() -> None:
     register_plural_mapping("SenderIdentifier", "sender_identifiers")
     register_plural_mapping("AddresseeIdentifier", "addressee_identifiers")
     register_plural_mapping("ProductIdentifier", "product_identifiers")
+
+    # DescriptiveDetail plural mappings
+    register_plural_mapping("TitleDetail", "title_details")
+    register_plural_mapping("TitleElement", "title_elements")
+    register_plural_mapping("Contributor", "contributors")
+    register_plural_mapping("Measure", "measures")
+    register_plural_mapping("Extent", "extents")
+    register_plural_mapping("Collection", "collections")
+
+    # PublishingDetail plural mappings
+    register_plural_mapping("Publisher", "publishers")
+    register_plural_mapping("PublishingDate", "publishing_dates")
+
+    # RelatedMaterial plural mappings
+    register_plural_mapping("RelatedProduct", "related_products")
 
 
 # Register models at module load time

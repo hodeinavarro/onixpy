@@ -1,0 +1,187 @@
+"""ONIX DescriptiveDetail composite models.
+
+Contains product descriptive information including titles, contributors,
+collections, and measurements.
+"""
+
+from __future__ import annotations
+
+from pydantic import ConfigDict, Field, field_validator
+
+from onix.lists import get_code
+from onix.product.base import ProductBase
+
+
+class TitleElement(ProductBase):
+    """Title element component (part of TitleDetail).
+
+    Elements:
+    - TitleElementLevel (B.202): Code from List 149 - required
+    - TitleText (B.203): The title text - required
+    - Subtitle (B.204): Optional subtitle
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    title_element_level: str = Field(alias="TitleElementLevel")
+    title_text: str = Field(alias="TitleText")
+    subtitle: str | None = Field(default=None, alias="Subtitle")
+
+
+class TitleDetail(ProductBase):
+    """Title detail composite.
+
+    Provides detailed title information including title type and elements.
+
+    Elements:
+    - TitleType (B.201): Code from List 15 - required
+    - TitleElement (0…n): Title elements
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    title_type: str = Field(alias="TitleType")
+    title_elements: list[TitleElement] = Field(
+        default_factory=list, alias="TitleElement"
+    )
+
+
+class Contributor(ProductBase):
+    """Contributor composite.
+
+    Describes a contributor to the product (author, editor, illustrator, etc.).
+
+    Elements:
+    - ContributorRole (B.206): Code from List 17 - required
+    - PersonName (B.208): Name of contributor person
+    - CorporateName (B.209): Name of contributor organization
+    - ContributorIdentifier (0…n): Identifiers for the contributor
+    - NameIdentifier (0…n): Name identifiers
+    - BiographicalNote (B.215): Biographical information
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    contributor_role: str = Field(alias="ContributorRole")
+    person_name: str | None = Field(default=None, alias="PersonName")
+    corporate_name: str | None = Field(default=None, alias="CorporateName")
+    biographical_note: str | None = Field(default=None, alias="BiographicalNote")
+
+    @field_validator("contributor_role")
+    @classmethod
+    def validate_contributor_role(cls, v: str) -> str:
+        """Validate contributor_role is a valid List 17 code."""
+        if get_code(17, v) is None:
+            raise ValueError(
+                f"Invalid ContributorRole: '{v}' is not a valid List 17 code"
+            )
+        return v
+
+
+class Measure(ProductBase):
+    """Measure composite.
+
+    Provides measurement information for the product (e.g., height, width, weight).
+
+    Elements:
+    - MeasureType (B.328): Code from List 48 - required
+    - Measurement (B.329): Numeric measurement value - required
+    - MeasureUnitCode (B.330): Unit of measurement from List 50 - required
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    measure_type: str = Field(alias="MeasureType")
+    measurement: str = Field(alias="Measurement")
+    measure_unit_code: str = Field(alias="MeasureUnitCode")
+
+    @field_validator("measure_type")
+    @classmethod
+    def validate_measure_type(cls, v: str) -> str:
+        """Validate measure_type is a valid List 48 code."""
+        if get_code(48, v) is None:
+            raise ValueError(f"Invalid MeasureType: '{v}' is not a valid List 48 code")
+        return v
+
+    @field_validator("measure_unit_code")
+    @classmethod
+    def validate_measure_unit_code(cls, v: str) -> str:
+        """Validate measure_unit_code is a valid List 50 code."""
+        if get_code(50, v) is None:
+            raise ValueError(
+                f"Invalid MeasureUnitCode: '{v}' is not a valid List 50 code"
+            )
+        return v
+
+
+class Extent(ProductBase):
+    """Extent composite.
+
+    Provides extent information (page count, duration, etc.).
+
+    Elements:
+    - ExtentType (B.301): Code from List 23 - required
+    - ExtentValue (B.302): Numeric extent value - required
+    - ExtentUnit (B.303): Unit of extent - required
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    extent_type: str = Field(alias="ExtentType")
+    extent_value: str = Field(alias="ExtentValue")
+    extent_unit: str = Field(alias="ExtentUnit")
+
+
+class Collection(ProductBase):
+    """Collection composite.
+
+    Groups products into a collection or series.
+
+    Elements:
+    - CollectionType (B.360): Code from List 148 - required
+    - CollectionSequenceNumber (B.365): Position in collection
+    - CollectionTitle (B.366): Name of the collection
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    collection_type: str = Field(alias="CollectionType")
+    collection_sequence_number: str | None = Field(
+        default=None, alias="CollectionSequenceNumber"
+    )
+    collection_title: str | None = Field(default=None, alias="CollectionTitle")
+
+    @field_validator("collection_type")
+    @classmethod
+    def validate_collection_type(cls, v: str) -> str:
+        """Validate collection_type is a valid List 148 code."""
+        if get_code(148, v) is None:
+            raise ValueError(
+                f"Invalid CollectionType: '{v}' is not a valid List 148 code"
+            )
+        return v
+
+
+class DescriptiveDetail(ProductBase):
+    """DescriptiveDetail composite (Product Block 2).
+
+    Contains descriptive information about the product including titles,
+    contributors, subject information, and related details.
+
+    Elements:
+    - ProductComposition (B.200): Code indicating product composition
+    - TitleDetail (0…n): Title details (including title, subtitle)
+    - Contributor (0…n): Contributors (authors, editors, etc.)
+    - Collection (0…n): Collection/series information
+    - Measure (0…n): Measurements (height, width, weight, etc.)
+    - Extent (0…n): Extent details (page count, duration, etc.)
+    """
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    product_composition: str | None = Field(default=None, alias="ProductComposition")
+    title_details: list[TitleDetail] = Field(default_factory=list, alias="TitleDetail")
+    contributors: list[Contributor] = Field(default_factory=list, alias="Contributor")
+    collections: list[Collection] = Field(default_factory=list, alias="Collection")
+    measures: list[Measure] = Field(default_factory=list, alias="Measure")
+    extents: list[Extent] = Field(default_factory=list, alias="Extent")

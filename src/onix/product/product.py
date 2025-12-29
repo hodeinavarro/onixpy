@@ -46,15 +46,14 @@ class Product(ProductBase):
     - notification_type: Code from List 1 (e.g., "03" for confirmed)
     - product_identifiers: At least one ProductIdentifier
 
-    ONIX 3.0 Product structure (blocks to be implemented):
+    ONIX 3.0 Product structure (blocks):
     - Block 1: Product description (identifiers, form, extent, etc.)
-    - Block 2: Marketing collateral detail (descriptions, cover images)
-    - Block 3: Content detail (contributors, subjects, audience)
-    - Block 4: Publishing detail (publisher, imprint, dates)
-    - Block 5: Related material (related products, works)
-    - Block 6: Product supply (availability, pricing)
-    - Block 7: Promotion detail (promotional info)
-    - Block 8: Production detail (manufacturing info)
+    - Block 2: DescriptiveDetail (titles, contributors, subjects)
+    - Block 3: PublishingDetail (publisher, imprint, dates)
+    - Block 4: RelatedMaterial (related products, works)
+    - Block 5: ProductSupply (availability, pricing)
+    - Block 6: MarketingDetail (promotional info)
+    - Block 7: ProductionDetail (manufacturing info)
 
     Example:
         >>> from onix import Product
@@ -79,3 +78,12 @@ class Product(ProductBase):
     product_identifiers: list[ProductIdentifier] = Field(
         alias="ProductIdentifier", min_length=1
     )
+
+    # Block 2: DescriptiveDetail (imported to avoid circular imports)
+    descriptive_detail: object | None = Field(default=None, alias="DescriptiveDetail")
+
+    # Block 3: PublishingDetail (imported to avoid circular imports)
+    publishing_detail: object | None = Field(default=None, alias="PublishingDetail")
+
+    # Block 4: RelatedMaterial (imported to avoid circular imports)
+    related_material: object | None = Field(default=None, alias="RelatedMaterial")

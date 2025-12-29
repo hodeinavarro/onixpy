@@ -23,20 +23,30 @@ from __future__ import annotations
 
 from onix.lists.list1 import List1, NotificationOrUpdateType
 from onix.lists.list5 import List5, ProductIdentifierType
+from onix.lists.list17 import ContributorRole, List17
 from onix.lists.list44 import List44, NameIdentifierType
+from onix.lists.list45 import List45, PublishingRole
+from onix.lists.list48 import List48, MeasureType
+from onix.lists.list50 import List50, MeasureUnit
 from onix.lists.list58 import List58, PriceType
 from onix.lists.list74 import LanguageCode, List74
 from onix.lists.list96 import CurrencyCode, List96
+from onix.lists.list148 import CollectionType, List148
 from onix.lists.models import CodeList, CodeListEntry
 
 # Registry of all code lists (by number)
 _CODE_LISTS: dict[int, CodeList] = {
     1: List1,
     5: List5,
+    17: List17,
     44: List44,
+    45: List45,
+    48: List48,
+    50: List50,
     58: List58,
     74: List74,
     96: List96,
+    148: List148,
 }
 
 
@@ -94,17 +104,27 @@ __all__ = [
     # Lists by number
     "List1",
     "List5",
+    "List17",
     "List44",
+    "List45",
+    "List48",
+    "List50",
     "List58",
     "List74",
     "List96",
+    "List148",
     # Lists by name
     "NotificationOrUpdateType",
     "ProductIdentifierType",
+    "ContributorRole",
     "NameIdentifierType",
+    "PublishingRole",
+    "MeasureType",
+    "MeasureUnit",
     "PriceType",
     "LanguageCode",
     "CurrencyCode",
+    "CollectionType",
     # Functions
     "get_list",
     "get_code",

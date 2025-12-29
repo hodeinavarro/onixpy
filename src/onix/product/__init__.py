@@ -26,9 +26,39 @@ Example:
     ... )
 """
 
+from onix.product.descriptive_detail import (
+    Collection,
+    Contributor,
+    DescriptiveDetail,
+    Extent,
+    Measure,
+    TitleDetail,
+    TitleElement,
+)
 from onix.product.product import Product, ProductIdentifier
+from onix.product.publishing_detail import (
+    Publisher,
+    PublishingDate,
+    PublishingDetail,
+)
+from onix.product.related_material import RelatedMaterial, RelatedProduct
 
 __all__ = [
     "Product",
     "ProductIdentifier",
+    # DescriptiveDetail composites
+    "DescriptiveDetail",
+    "TitleDetail",
+    "TitleElement",
+    "Contributor",
+    "Measure",
+    "Extent",
+    "Collection",
+    # PublishingDetail composites
+    "PublishingDetail",
+    "Publisher",
+    "PublishingDate",
+    # RelatedMaterial composites
+    "RelatedMaterial",
+    "RelatedProduct",
 ]
