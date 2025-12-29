@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
+from onix.product import Product
+
 
 class ONIXAttributes(BaseModel):
     """Shared ONIX attributes that may appear on any element.
@@ -31,24 +33,6 @@ class Header(ONIXAttributes):
 
     Contains information about the sender, addressee, and message metadata.
     This is a placeholder; fields will be expanded as needed.
-    """
-
-    pass
-
-
-class Product(ONIXAttributes):
-    """ONIX product record.
-
-    Contains all metadata for a single product (book, ebook, etc.).
-    This is a placeholder; fields will be expanded with ONIX blocks:
-    - Block 1: Product description
-    - Block 2: Marketing collateral detail
-    - Block 3: Content detail
-    - Block 4: Publishing detail
-    - Block 5: Related material
-    - Block 6: Product supply
-    - Block 7: Promotion detail
-    - Block 8: Production detail
     """
 
     pass

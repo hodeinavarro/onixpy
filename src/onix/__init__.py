@@ -29,7 +29,8 @@ Example:
     >>> message = xml_to_message("/path/to/message.xml")
 """
 
-from onix.message import Header, ONIXAttributes, ONIXMessage, Product
+from onix.message import Header, ONIXAttributes, ONIXMessage
+from onix.product import Product
 
 __all__ = [
     "ONIXMessage",

@@ -9,14 +9,20 @@ Python library for parsing and working with ONIX for Books metadata (publishing 
 ```
 src/onix/
 ├── __init__.py       # Public API: ONIXMessage, Header, Product, ONIXAttributes
-├── message.py        # Core Pydantic models for ONIX structure
+├── message.py        # ONIXMessage, Header, ONIXAttributes models
+├── product/
+│   ├── __init__.py   # Exports Product
+│   ├── base.py       # ProductBase with shared ONIX attributes
+│   └── product.py    # Product model (will import blocks)
 ├── parsers/
 │   ├── __init__.py   # Parser API: json_to_message, xml_to_message, etc.
 │   ├── json.py       # JSON parsing/serialization
 │   ├── xml.py        # XML parsing/serialization (lxml preferred)
 │   └── tags.py       # Reference ↔ short tag name resolver
 └── lists/
-    └── __init__.py   # ONIX code lists (List 44, etc.)
+    ├── __init__.py   # Code list registry and lookup functions
+    ├── models.py     # CodeList, CodeListEntry dataclasses
+    └── list44.py     # List 44: Name identifier type
 ```
 
 ### Key Design Decisions
