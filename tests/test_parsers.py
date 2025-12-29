@@ -172,6 +172,14 @@ class TestJSONSerializer:
         assert restored.header.message_note == original.header.message_note
         assert len(restored.products) == len(original.products)
 
+    def test_pydantic_json_roundtrip_equality(self):
+        """Pydantic model -> JSON -> Pydantic yields equal models."""
+        a = ONIXMessage(release="3.1", header=make_header(), products=[make_product()])
+        json_str = message_to_json(a)
+        b = json_to_message(json.loads(json_str))
+
+        assert a.model_dump() == b.model_dump()
+
 
 class TestXMLParser:
     """Tests for XML parsing."""

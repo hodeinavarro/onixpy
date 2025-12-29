@@ -109,9 +109,18 @@ def message_to_dict(
     Returns:
         Dictionary representation of the message.
     """
-    data = message.model_dump(exclude_none=True, exclude_defaults=True)
+    # When short_names is requested we need reference tag names so they
+    # can be converted to short tags. Otherwise prefer field names.
+    if short_names:
+        data = message.model_dump(
+            by_alias=True, exclude_none=True, exclude_defaults=True
+        )
+    else:
+        data = message.model_dump(
+            by_alias=False, exclude_none=True, exclude_defaults=True
+        )
 
-    # Always include header even if empty
+    # Always include header even if empty (use field name)
     if "header" not in data:
         data["header"] = {}
 

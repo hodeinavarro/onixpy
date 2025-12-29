@@ -354,8 +354,8 @@ class TestPydanticToXMLValidation:
                     sender_name="Test Publisher",
                     sender_identifiers=[
                         SenderIdentifier(
-                            sender_id_type="01",  # Proprietary
-                            id_value="12345",
+                            sender_id_type="16",  # ISNI
+                            id_value="0000000121032683",
                         )
                     ],
                 ),

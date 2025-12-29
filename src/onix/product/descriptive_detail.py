@@ -6,7 +6,7 @@ collections, and measurements.
 
 from __future__ import annotations
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import Field, field_validator
 
 from onix.lists import get_code
 from onix.product.base import ProductBase
@@ -21,11 +21,16 @@ class TitleElement(ProductBase):
     - Subtitle (B.204): Optional subtitle
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    title_element_level: str = Field(alias="TitleElementLevel")
-    title_text: str = Field(alias="TitleText")
-    subtitle: str | None = Field(default=None, alias="Subtitle")
+    title_element_level: str = Field(
+        alias="TitleElementLevel",
+    )
+    title_text: str = Field(
+        alias="TitleText",
+    )
+    subtitle: str | None = Field(
+        default=None,
+        alias="Subtitle",
+    )
 
 
 class TitleDetail(ProductBase):
@@ -38,11 +43,12 @@ class TitleDetail(ProductBase):
     - TitleElement (0…n): Title elements
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    title_type: str = Field(alias="TitleType")
+    title_type: str = Field(
+        alias="TitleType",
+    )
     title_elements: list[TitleElement] = Field(
-        default_factory=list, alias="TitleElement"
+        default_factory=list,
+        alias="TitleElement",
     )
 
 
@@ -60,12 +66,21 @@ class Contributor(ProductBase):
     - BiographicalNote (B.215): Biographical information
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    contributor_role: str = Field(alias="ContributorRole")
-    person_name: str | None = Field(default=None, alias="PersonName")
-    corporate_name: str | None = Field(default=None, alias="CorporateName")
-    biographical_note: str | None = Field(default=None, alias="BiographicalNote")
+    contributor_role: str = Field(
+        alias="ContributorRole",
+    )
+    person_name: str | None = Field(
+        default=None,
+        alias="PersonName",
+    )
+    corporate_name: str | None = Field(
+        default=None,
+        alias="CorporateName",
+    )
+    biographical_note: str | None = Field(
+        default=None,
+        alias="BiographicalNote",
+    )
 
     @field_validator("contributor_role")
     @classmethod
@@ -89,11 +104,15 @@ class Measure(ProductBase):
     - MeasureUnitCode (B.330): Unit of measurement from List 50 - required
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    measure_type: str = Field(alias="MeasureType")
-    measurement: str = Field(alias="Measurement")
-    measure_unit_code: str = Field(alias="MeasureUnitCode")
+    measure_type: str = Field(
+        alias="MeasureType",
+    )
+    measurement: str = Field(
+        alias="Measurement",
+    )
+    measure_unit_code: str = Field(
+        alias="MeasureUnitCode",
+    )
 
     @field_validator("measure_type")
     @classmethod
@@ -125,11 +144,15 @@ class Extent(ProductBase):
     - ExtentUnit (B.303): Unit of extent - required
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    extent_type: str = Field(alias="ExtentType")
-    extent_value: str = Field(alias="ExtentValue")
-    extent_unit: str = Field(alias="ExtentUnit")
+    extent_type: str = Field(
+        alias="ExtentType",
+    )
+    extent_value: str = Field(
+        alias="ExtentValue",
+    )
+    extent_unit: str = Field(
+        alias="ExtentUnit",
+    )
 
 
 class Collection(ProductBase):
@@ -143,13 +166,17 @@ class Collection(ProductBase):
     - CollectionTitle (B.366): Name of the collection
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    collection_type: str = Field(alias="CollectionType")
-    collection_sequence_number: str | None = Field(
-        default=None, alias="CollectionSequenceNumber"
+    collection_type: str = Field(
+        alias="CollectionType",
     )
-    collection_title: str | None = Field(default=None, alias="CollectionTitle")
+    collection_sequence_number: str | None = Field(
+        default=None,
+        alias="CollectionSequenceNumber",
+    )
+    collection_title: str | None = Field(
+        default=None,
+        alias="CollectionTitle",
+    )
 
     @field_validator("collection_type")
     @classmethod
@@ -177,11 +204,27 @@ class DescriptiveDetail(ProductBase):
     - Extent (0…n): Extent details (page count, duration, etc.)
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    product_composition: str | None = Field(default=None, alias="ProductComposition")
-    title_details: list[TitleDetail] = Field(default_factory=list, alias="TitleDetail")
-    contributors: list[Contributor] = Field(default_factory=list, alias="Contributor")
-    collections: list[Collection] = Field(default_factory=list, alias="Collection")
-    measures: list[Measure] = Field(default_factory=list, alias="Measure")
-    extents: list[Extent] = Field(default_factory=list, alias="Extent")
+    product_composition: str | None = Field(
+        default=None,
+        alias="ProductComposition",
+    )
+    title_details: list[TitleDetail] = Field(
+        default_factory=list,
+        alias="TitleDetail",
+    )
+    contributors: list[Contributor] = Field(
+        default_factory=list,
+        alias="Contributor",
+    )
+    collections: list[Collection] = Field(
+        default_factory=list,
+        alias="Collection",
+    )
+    measures: list[Measure] = Field(
+        default_factory=list,
+        alias="Measure",
+    )
+    extents: list[Extent] = Field(
+        default_factory=list,
+        alias="Extent",
+    )

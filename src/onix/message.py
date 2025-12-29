@@ -7,13 +7,14 @@ source of truth for XML tag/field name mapping.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import Field, model_validator
 
+from onix._base import ONIXModel
 from onix.header import Header
 from onix.product import Product
 
 
-class ONIXAttributes(BaseModel):
+class ONIXAttributes(ONIXModel):
     """Shared ONIX attributes that may appear on any element.
 
     These attributes carry metadata about the data itself:
@@ -21,8 +22,6 @@ class ONIXAttributes(BaseModel):
     - sourcename: Name of the source of the data
     - sourcetype: Code from List 3 indicating the type of source
     """
-
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     datestamp: str | None = None
     sourcename: str | None = None
@@ -53,9 +52,17 @@ class ONIXMessage(ONIXAttributes):
     """
 
     release: str = "3.1"
-    header: Header = Field(alias="Header")
-    products: list[Product] = Field(default_factory=list, alias="Product")
-    no_product: bool = Field(default=False, alias="NoProduct")
+    header: Header = Field(
+        alias="Header",
+    )
+    products: list[Product] = Field(
+        default_factory=list,
+        alias="Product",
+    )
+    no_product: bool = Field(
+        default=False,
+        alias="NoProduct",
+    )
 
     @model_validator(mode="after")
     def _validate_products_no_product(self) -> "ONIXMessage":

@@ -178,7 +178,9 @@ def message_to_xml(
     Returns:
         lxml Element representing the message.
     """
-    data = message.model_dump(exclude_none=True, exclude_defaults=True)
+    # Prefer field names for serialization so tag mapping functions can
+    # derive reference/short tag names correctly.
+    data = message.model_dump(by_alias=False, exclude_none=True, exclude_defaults=True)
 
     root_tag = "ONIXMessage" if not short_names else to_short_tag("ONIXMessage")
 

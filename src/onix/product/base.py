@@ -7,10 +7,10 @@ when block models need to reference shared attributes.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from onix._base import ONIXModel
 
 
-class ONIXAttributes(BaseModel):
+class ONIXAttributes(ONIXModel):
     """Shared ONIX attributes that may appear on any element.
 
     These attributes carry metadata about the data itself:
@@ -18,8 +18,6 @@ class ONIXAttributes(BaseModel):
     - sourcename: Name of the source of the data
     - sourcetype: Code from List 3 indicating the type of source
     """
-
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     datestamp: str | None = None
     sourcename: str | None = None

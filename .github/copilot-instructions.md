@@ -161,6 +161,20 @@ print(isni.heading)  # "ISNI"
 - Test classes: `Test*` prefix
 - Test functions: `test_*` prefix
 
+Prefer class-based tests following the project's existing style: define a `Test*`
+class and place individual test cases as methods named `test_*` on that class.
+This keeps tests consistent and makes fixtures easier to scope.
+
+Example:
+```python
+class TestMyFeature:
+    def test_happy_path(self):
+        assert do_stuff() == expected
+
+    def test_edge_case(self):
+        assert do_stuff(None) is None
+```
+
 ### Type Safety
 - All public APIs have type annotations
 - `py.typed` marker for consumer type checking

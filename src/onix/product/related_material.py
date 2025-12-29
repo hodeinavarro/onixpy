@@ -5,7 +5,7 @@ Contains information about related products, materials, and cross-references.
 
 from __future__ import annotations
 
-from pydantic import ConfigDict, Field
+from pydantic import Field
 
 from onix.product.base import ProductBase
 
@@ -21,13 +21,17 @@ class RelatedProduct(ProductBase):
     - ProductForm (B.012): Product form code if not the same as main product
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    relation_code: str = Field(alias="RelationCode")
-    product_identifiers: list[dict] = Field(
-        default_factory=list, alias="ProductIdentifier"
+    relation_code: str = Field(
+        alias="RelationCode",
     )
-    product_form: str | None = Field(default=None, alias="ProductForm")
+    product_identifiers: list[dict] = Field(
+        default_factory=list,
+        alias="ProductIdentifier",
+    )
+    product_form: str | None = Field(
+        default=None,
+        alias="ProductForm",
+    )
 
 
 class RelatedMaterial(ProductBase):
@@ -41,8 +45,7 @@ class RelatedMaterial(ProductBase):
     - RelatedWork (0…n): Related work information
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
     related_products: list[RelatedProduct] = Field(
-        default_factory=list, alias="RelatedProduct"
+        default_factory=list,
+        alias="RelatedProduct",
     )

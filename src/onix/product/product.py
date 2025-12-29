@@ -31,9 +31,16 @@ class ProductIdentifier(ONIXAttributes):
         ... )
     """
 
-    product_id_type: str = Field(alias="ProductIDType")
-    id_type_name: str | None = Field(default=None, alias="IDTypeName")
-    id_value: str = Field(alias="IDValue")
+    product_id_type: str = Field(
+        alias="ProductIDType",
+    )
+    id_type_name: str | None = Field(
+        default=None,
+        alias="IDTypeName",
+    )
+    id_value: str = Field(
+        alias="IDValue",
+    )
 
 
 class Product(ProductBase):
@@ -71,19 +78,33 @@ class Product(ProductBase):
     """
 
     # Record metadata (gp.record_metadata)
-    record_reference: str = Field(alias="RecordReference")
-    notification_type: str = Field(alias="NotificationType")
+    record_reference: str = Field(
+        alias="RecordReference",
+    )
+    notification_type: str = Field(
+        alias="NotificationType",
+    )
 
     # Product identifiers (gp.product_numbers)
     product_identifiers: list[ProductIdentifier] = Field(
-        alias="ProductIdentifier", min_length=1
+        alias="ProductIdentifier",
+        min_length=1,
     )
 
     # Block 2: DescriptiveDetail (imported to avoid circular imports)
-    descriptive_detail: object | None = Field(default=None, alias="DescriptiveDetail")
+    descriptive_detail: object | None = Field(
+        default=None,
+        alias="DescriptiveDetail",
+    )
 
     # Block 3: PublishingDetail (imported to avoid circular imports)
-    publishing_detail: object | None = Field(default=None, alias="PublishingDetail")
+    publishing_detail: object | None = Field(
+        default=None,
+        alias="PublishingDetail",
+    )
 
     # Block 4: RelatedMaterial (imported to avoid circular imports)
-    related_material: object | None = Field(default=None, alias="RelatedMaterial")
+    related_material: object | None = Field(
+        default=None,
+        alias="RelatedMaterial",
+    )

@@ -6,7 +6,7 @@ and publication dates.
 
 from __future__ import annotations
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import Field, field_validator
 
 from onix.lists import get_code
 from onix.product.base import ProductBase
@@ -22,10 +22,12 @@ class Publisher(ProductBase):
     - PublisherName (B.082): Name of the publisher - required
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    publishing_role: str = Field(alias="PublishingRole")
-    publisher_name: str = Field(alias="PublisherName")
+    publishing_role: str = Field(
+        alias="PublishingRole",
+    )
+    publisher_name: str = Field(
+        alias="PublisherName",
+    )
 
     @field_validator("publishing_role")
     @classmethod
@@ -48,10 +50,12 @@ class PublishingDate(ProductBase):
     - Date (B.307): Date value - required
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    publishing_date_role: str = Field(alias="PublishingDateRole")
-    date: str = Field(alias="Date")
+    publishing_date_role: str = Field(
+        alias="PublishingDateRole",
+    )
+    date: str = Field(
+        alias="Date",
+    )
 
 
 class PublishingDetail(ProductBase):
@@ -67,11 +71,19 @@ class PublishingDetail(ProductBase):
     - CopyrightYear (B.087): Copyright year as YYYY
     """
 
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    publishing_status: str | None = Field(default=None, alias="PublishingStatus")
-    publishers: list[Publisher] = Field(default_factory=list, alias="Publisher")
-    publishing_dates: list[PublishingDate] = Field(
-        default_factory=list, alias="PublishingDate"
+    publishing_status: str | None = Field(
+        default=None,
+        alias="PublishingStatus",
     )
-    copyright_year: int | None = Field(default=None, alias="CopyrightYear")
+    publishers: list[Publisher] = Field(
+        default_factory=list,
+        alias="Publisher",
+    )
+    publishing_dates: list[PublishingDate] = Field(
+        default_factory=list,
+        alias="PublishingDate",
+    )
+    copyright_year: int | None = Field(
+        default=None,
+        alias="CopyrightYear",
+    )

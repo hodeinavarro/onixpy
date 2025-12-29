@@ -7,6 +7,10 @@ A Python library for parsing and working with ONIX for Books metadata (publishin
 - **ONIX 3.1 support** - Parse and create ONIX 3.1 messages
 - **Type-safe models** - Pydantic-based models with full type annotations
 - **XML & JSON support** - Parse from and serialize to both formats
+ - **Model behavior** - Constructors accept snake_case field names, validate by
+     field name (`validate_by_name=True`) and serialize using XML aliases
+     (`serialize_by_alias=True`). Empty-string inputs for string fields are
+     normalized to `None` to avoid storing blank values.
 - **Code list validation** - Built-in ONIX code lists with validation
 - **RNG schema validation** - Validate messages against RELAX NG schema
 
