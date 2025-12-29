@@ -50,7 +50,7 @@ class Sender(BaseModel):
     - SenderIdentifier (0…n): Identifiers for the sender
     - SenderName (H.4): Name of the sender - optional
     - ContactName (H.5): Contact person name - optional
-    - TelephoneNumber (H.5a): Contact telephone - optional (deprecated)
+    - TelephoneNumber (H.5a): Contact telephone - optional
     - EmailAddress (H.6): Contact email - optional
     """
 
@@ -103,7 +103,7 @@ class Addressee(BaseModel):
     - AddresseeIdentifier (0…n): Identifiers for the addressee
     - AddresseeName (H.10): Name of the addressee - optional
     - ContactName (H.11): Contact person name - optional
-    - TelephoneNumber (H.11a): Contact telephone - optional (deprecated)
+    - TelephoneNumber (H.11a): Contact telephone - optional
     - EmailAddress (H.12): Contact email - optional
     """
 
