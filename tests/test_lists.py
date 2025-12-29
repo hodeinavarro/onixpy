@@ -2,8 +2,35 @@
 
 from __future__ import annotations
 
+from onix.lists import (
+    CodeList,
+    CodeListEntry,
+    List44,
+    NameIdentifierType,
+    get_code,
+    get_list,
+    list_available,
+)
 
-from onix.lists import CodeList, CodeListEntry, get_code, get_list, list_available
+
+class TestImports:
+    """Tests for import patterns."""
+
+    def test_import_list_by_number(self):
+        """Can import List44 directly."""
+        assert List44 is not None
+        assert List44.number == 44
+
+    def test_import_list_by_name(self):
+        """Can import NameIdentifierType as alias."""
+        assert NameIdentifierType is not None
+        assert NameIdentifierType is List44
+
+    def test_import_from_submodule(self):
+        """Can import from submodule directly."""
+        from onix.lists.list44 import List44 as L44
+
+        assert L44.number == 44
 
 
 class TestCodeListEntry:
