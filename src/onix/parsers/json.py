@@ -145,19 +145,25 @@ def _normalize_input(
     source: str | PathLike[str] | dict[str, Any] | Iterable[dict[str, Any]],
 ) -> dict[str, Any]:
     """Normalize various input types to a single dict."""
-    # Path-like string
-    if isinstance(source, (str, PathLike)):
+    # Handle string input (file path)
+    if isinstance(source, str):
         path = Path(source)
         if path.exists():
             with open(path, encoding="utf-8") as f:
                 return json.load(f)
-        # If not a valid path, might be a JSON string (edge case)
-        # But we document path-like, so raise if not found
+        raise FileNotFoundError(f"JSON file not found: {path}")
+
+    # Handle PathLike input (file path)
+    if isinstance(source, PathLike):
+        path = Path(source)  # type: ignore[arg-type]  # ty can't narrow PathLike from Iterable
+        if path.exists():
+            with open(path, encoding="utf-8") as f:
+                return json.load(f)
         raise FileNotFoundError(f"JSON file not found: {path}")
 
     # Single dict
     if isinstance(source, dict):
-        return source
+        return source  # type: ignore[return-value]  # ty doesn't narrow dict properly
 
     # Iterable of dicts - combine products from multiple messages
     messages = list(source)

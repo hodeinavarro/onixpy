@@ -78,6 +78,17 @@ uv run ruff check .
 uv run ruff format .
 ```
 
+### Type Checking
+```bash
+# ty is a new type checker by Astral (creators of ruff/uv)
+# Note: ty is experimental/not production-ready but works well most of the time
+uv run ty check
+
+# Known limitations with ty:
+# - Some complex type narrowing (e.g., PathLike vs Iterable) may need type: ignore
+# - lxml nsmap with None key needs type: ignore[arg-type] (stubs type it as Mapping[str, str])
+```
+
 ## API Examples
 
 ### Creating Messages

@@ -18,8 +18,10 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "lxml-stubs>=0.5.1",
     "pytest>=9.0.1",
     "ruff>=0.14.10",
+    "ty>=0.0.7",
 ]
 
 [tool.pytest.ini_options]
@@ -36,3 +38,11 @@ markers = [
     "slow: marks tests as slow",
     "integration: marks tests as integration tests",
 ]
+
+[tool.ty]
+# ty is experimental - these settings may change
+# Exclude tests from type checking because ty doesn't understand
+# Pydantic's populate_by_name=True (allows using field names instead of aliases)
+
+[tool.ty.src]
+include = ["src/"]

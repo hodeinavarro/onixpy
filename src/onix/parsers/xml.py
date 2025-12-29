@@ -137,10 +137,11 @@ def message_to_xml(
         if not short_names
         else "http://ns.editeur.org/onix/3.1/short"
     )
-    nsmap = {None: namespace}  # Default namespace
+    nsmap: dict[str | None, str] = {None: namespace}  # Default namespace
 
     # Use Clark notation for the root element tag to ensure namespace is properly set
-    root = etree.Element(f"{{{namespace}}}{root_tag}", nsmap=nsmap)
+    # type: ignore because lxml accepts None key but stubs type it as Mapping[str, str]
+    root = etree.Element(f"{{{namespace}}}{root_tag}", nsmap=nsmap)  # type: ignore[arg-type]
 
     # Set release attribute
     root.set("release", data.get("release", "3.1"))
@@ -246,19 +247,20 @@ def _normalize_input(
     if _is_element(source):
         return source  # type: ignore[return-value]
 
-    # Path-like or XML string
-    if isinstance(source, (str, PathLike)):
-        path = Path(source) if not isinstance(source, str) else None
+    # Handle string input (XML string or file path)
+    if isinstance(source, str):
+        # Heuristic: XML strings start with '<'
+        if source.strip().startswith("<"):
+            return _parse_xml_string(source)
+        # Otherwise treat as path
+        path = Path(source)
+        if path.exists():
+            return _parse_xml_file(path)
+        raise FileNotFoundError(f"XML file not found: {path}")
 
-        # Check if it's a file path
-        if path is None:
-            str_source = source
-            # Heuristic: XML strings start with '<'
-            if str_source.strip().startswith("<"):
-                return _parse_xml_string(str_source)
-            # Otherwise treat as path
-            path = Path(str_source)
-
+    # Handle PathLike input (file path)
+    if isinstance(source, PathLike):
+        path = Path(source)  # type: ignore[arg-type]  # ty can't narrow PathLike from Iterable
         if path.exists():
             return _parse_xml_file(path)
         raise FileNotFoundError(f"XML file not found: {path}")
@@ -267,8 +269,10 @@ def _normalize_input(
     elements = list(source)  # type: ignore[arg-type]
     if not elements:
         # Return empty message structure
-        nsmap = {None: "http://ns.editeur.org/onix/3.1/reference"}
-        root = etree.Element("ONIXMessage", nsmap=nsmap)
+        nsmap: dict[str | None, str] = {
+            None: "http://ns.editeur.org/onix/3.1/reference"
+        }
+        root = etree.Element("ONIXMessage", nsmap=nsmap)  # type: ignore[arg-type]
         root.set("release", "3.1")
         root.append(etree.Element("Header"))
         return root
