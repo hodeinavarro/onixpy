@@ -25,6 +25,8 @@ Field mapping:
 
 All parse/serialize functions accept a `short_names=True` flag to work
 with short tag names instead of the default reference names.
+
+Note: For RNG schema validation, see onix.validation module.
 """
 
 from onix.parsers.fields import (

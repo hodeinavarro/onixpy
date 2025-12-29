@@ -3,16 +3,15 @@
 Supports loading ONIXMessage from:
 - Path-like string (file path)
 - XML string
-- ElementTree Element (stdlib xml.etree or lxml)
+- lxml Element
 - Iterable of Element objects (combined into single message)
 
 Supports dumping ONIXMessage to:
-- ElementTree Element
+- lxml Element
 - XML string
 - File path
 
-Prefers lxml if available for better performance and features;
-falls back to stdlib xml.etree.ElementTree.
+Requires lxml for XML handling.
 """
 
 from __future__ import annotations
@@ -20,7 +19,8 @@ from __future__ import annotations
 from os import PathLike
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
-from xml.etree import ElementTree as ET
+
+from lxml import etree
 
 from onix.header import (
     Addressee,
@@ -39,24 +39,10 @@ from onix.parsers.fields import (
 from onix.parsers.tags import to_reference_tag, to_short_tag
 from onix.product import Product
 
-# Try to import lxml for better XML handling
-try:
-    from lxml import etree as lxml_etree
-
-    HAS_LXML = True
-except ImportError:
-    lxml_etree = None  # type: ignore[assignment]
-    HAS_LXML = False
-
 if TYPE_CHECKING:
-    from xml.etree.ElementTree import Element
+    from lxml.etree import _Element as Element
 
-    if HAS_LXML:
-        from lxml.etree import _Element as LxmlElement
-
-        ElementType = Element | LxmlElement
-    else:
-        ElementType = Element
+    ElementType = Element
 
 
 # Register all models with the fields module for tag/field mapping
@@ -93,8 +79,8 @@ def xml_to_message(
         source: One of:
             - Path-like string pointing to an XML file
             - XML string (detected by starting with '<')
-            - ElementTree Element (stdlib or lxml)
-            - Iterable of Element objects (products combined)
+            - lxml Element
+            - Iterable of lxml Element objects (products combined)
         short_names: If True, expect short tag names in input;
             otherwise expect reference names (default). The parser
             will auto-detect and normalize to reference names.
@@ -104,7 +90,7 @@ def xml_to_message(
 
     Raises:
         FileNotFoundError: If path doesn't exist
-        ET.ParseError: If XML is invalid
+        etree.ParseError: If XML is invalid
         pydantic.ValidationError: If data doesn't match schema
 
     Example:
@@ -114,6 +100,12 @@ def xml_to_message(
     """
     root = _normalize_input(source)
     data = _element_to_dict(root, normalize_tags=not short_names)
+
+    # Ensure products is always a list if present and not already
+    # This handles single <Product> elements that get flattened
+    if "products" in data and not isinstance(data["products"], list):
+        data["products"] = [data["products"]]
+
     return ONIXMessage.model_validate(data)
 
 
@@ -121,7 +113,6 @@ def message_to_xml(
     message: ONIXMessage,
     *,
     short_names: bool = False,
-    use_lxml: bool = True,
 ) -> "ElementType":
     """Convert an ONIX message to an XML Element.
 
@@ -129,20 +120,23 @@ def message_to_xml(
         message: The ONIXMessage to convert.
         short_names: If True, use short tag names;
             otherwise use reference names (default).
-        use_lxml: If True and lxml is available, return lxml Element;
-            otherwise return stdlib Element.
 
     Returns:
-        XML Element representing the message.
+        lxml Element representing the message.
     """
     data = message.model_dump(exclude_none=True, exclude_defaults=True)
 
     root_tag = "ONIXMessage" if not short_names else to_short_tag("ONIXMessage")
 
-    if use_lxml and HAS_LXML:
-        root = lxml_etree.Element(root_tag)
-    else:
-        root = ET.Element(root_tag)
+    # Define namespace based on tag format
+    namespace = (
+        "http://ns.editeur.org/onix/3.1/reference"
+        if not short_names
+        else "http://ns.editeur.org/onix/3.1/short"
+    )
+    nsmap = {None: namespace}  # Default namespace
+
+    root = etree.Element(root_tag, nsmap=nsmap)
 
     # Set release attribute
     root.set("release", data.get("release", "3.1"))
@@ -156,22 +150,19 @@ def message_to_xml(
     header_tag = "Header" if not short_names else to_short_tag("Header")
     header_data = data.get("header", {})
     header_elem = _dict_to_element(
-        header_tag, header_data, short_names=short_names, use_lxml=use_lxml
+        header_tag, header_data, short_names=short_names, namespace=namespace
     )
     root.append(header_elem)
 
     # Build Products or NoProduct
     if data.get("no_product"):
         no_product_tag = "NoProduct" if not short_names else to_short_tag("NoProduct")
-        if use_lxml and HAS_LXML:
-            root.append(lxml_etree.Element(no_product_tag))
-        else:
-            root.append(ET.Element(no_product_tag))
+        root.append(etree.Element(f"{{{namespace}}}{no_product_tag}"))
     else:
         product_tag = "Product" if not short_names else to_short_tag("Product")
         for product_data in data.get("products", []):
             product_elem = _dict_to_element(
-                product_tag, product_data, short_names=short_names, use_lxml=use_lxml
+                product_tag, product_data, short_names=short_names, namespace=namespace
             )
             root.append(product_elem)
 
@@ -194,28 +185,23 @@ def message_to_xml_string(
             otherwise use reference names (default).
         xml_declaration: If True, include XML declaration.
         encoding: Character encoding for the declaration.
-        pretty_print: If True, format with indentation (lxml only).
+        pretty_print: If True, format with indentation.
 
     Returns:
         XML string representation of the message.
     """
-    root = message_to_xml(message, short_names=short_names, use_lxml=HAS_LXML)
+    root = message_to_xml(message, short_names=short_names)
 
-    if HAS_LXML:
-        return lxml_etree.tostring(
-            root,
-            encoding="unicode",
-            xml_declaration=xml_declaration,
-            pretty_print=pretty_print,
-        )
-    else:
-        # Stdlib doesn't support pretty_print directly
-        if pretty_print:
-            _indent_element(root)
-        xml_str = ET.tostring(root, encoding="unicode")
-        if xml_declaration:
-            xml_str = f'<?xml version="1.0" encoding="{encoding}"?>\n{xml_str}'
-        return xml_str
+    # lxml doesn't support xml_declaration with unicode encoding
+    # so we build it manually
+    xml_str = etree.tostring(
+        root,
+        encoding="unicode",
+        pretty_print=pretty_print,
+    )
+    if xml_declaration:
+        xml_str = f'<?xml version="1.0" encoding="{encoding}"?>\n{xml_str}'
+    return xml_str
 
 
 def save_xml(
@@ -251,8 +237,8 @@ def save_xml(
 def _normalize_input(
     source: str | PathLike[str] | "ElementType" | Iterable["ElementType"],
 ) -> "ElementType":
-    """Normalize various input types to a single Element."""
-    # Check if it's an Element type (stdlib or lxml)
+    """Normalize various input types to a single lxml Element."""
+    # Check if it's an lxml Element
     if _is_element(source):
         return source  # type: ignore[return-value]
 
@@ -277,20 +263,16 @@ def _normalize_input(
     elements = list(source)  # type: ignore[arg-type]
     if not elements:
         # Return empty message structure
-        root = ET.Element("ONIXMessage")
+        nsmap = {None: "http://ns.editeur.org/onix/3.1/reference"}
+        root = etree.Element("ONIXMessage", nsmap=nsmap)
         root.set("release", "3.1")
-        root.append(ET.Element("Header"))
+        root.append(etree.Element("Header"))
         return root
 
     # Use first element as base, append products from others
-    if HAS_LXML:
-        from copy import deepcopy
+    from copy import deepcopy
 
-        root = deepcopy(elements[0])
-    else:
-        from copy import deepcopy
-
-        root = deepcopy(elements[0])
+    root = deepcopy(elements[0])
 
     for elem in elements[1:]:
         # Find Product elements and append them
@@ -302,27 +284,18 @@ def _normalize_input(
 
 
 def _is_element(obj: Any) -> bool:
-    """Check if object is an XML Element (stdlib or lxml)."""
-    if isinstance(obj, ET.Element):
-        return True
-    if HAS_LXML and isinstance(obj, lxml_etree._Element):
-        return True
-    return False
+    """Check if object is an lxml Element."""
+    return isinstance(obj, etree._Element)
 
 
 def _parse_xml_string(xml_str: str) -> "ElementType":
     """Parse XML from string."""
-    if HAS_LXML:
-        return lxml_etree.fromstring(xml_str.encode("utf-8"))
-    return ET.fromstring(xml_str)
+    return etree.fromstring(xml_str.encode("utf-8"))
 
 
 def _parse_xml_file(path: Path) -> "ElementType":
     """Parse XML from file."""
-    if HAS_LXML:
-        tree = lxml_etree.parse(str(path))
-        return tree.getroot()
-    tree = ET.parse(path)
+    tree = etree.parse(str(path))
     return tree.getroot()
 
 
@@ -357,40 +330,41 @@ def _element_to_dict(
     # Handle child elements
     children: dict[str, list[Any]] = {}
     for child in element:
-        child_tag = child.tag if not normalize_tags else to_reference_tag(child.tag)
+        # Strip namespace from tag using lxml's QName or localname
+        child_tag = child.tag
+        if isinstance(child_tag, str) and "{" in child_tag:
+            # Clark notation: {namespace}localname
+            child_tag = child_tag.split("}")[-1]
+
+        if normalize_tags:
+            child_tag = to_reference_tag(child_tag)
+
         child_key = tag_to_field_name(child_tag)
 
-        # Check if this is a known complex element
-        is_complex_element = child_key in (
-            "header",
-            "products",
-            "no_product",
-            "sender",
-            "sender_identifiers",
-            "addressees",
-            "addressee_identifiers",
-        )
+        # Determine if element has complex content
+        has_children = len(child) > 0
+        has_attributes = bool(child.attrib)
+        has_text = bool(child.text and child.text.strip())
 
-        if len(child) == 0 and not child.attrib and not is_complex_element:
-            # Leaf element with text content
+        # If element has children or attributes, it's complex
+        # If it has no children, no attributes, but also no text, treat as empty complex (e.g., <Product/>)
+        is_complex = has_children or has_attributes or not has_text
+
+        if not is_complex:
+            # Leaf element with text content only
             value = child.text or ""
         else:
-            # Complex element - recurse to get dict
+            # Complex element (including empty ones like <Product/>)
             value = _element_to_dict(child, normalize_tags=normalize_tags)
 
         if child_key not in children:
             children[child_key] = []
         children[child_key].append(value)
 
-    # Flatten single-value lists, except for known list fields
-    list_fields = (
-        "products",
-        "sender_identifiers",
-        "addressees",
-        "addressee_identifiers",
-    )
+    # Add children to result
+    # Keep as list if multiple values, otherwise flatten to single value
     for key, values in children.items():
-        if key in list_fields or len(values) > 1:
+        if len(values) > 1:
             result[key] = values
         else:
             result[key] = values[0]
@@ -403,13 +377,15 @@ def _dict_to_element(
     data: dict[str, Any],
     *,
     short_names: bool = False,
-    use_lxml: bool = True,
+    namespace: str | None = None,
 ) -> "ElementType":
     """Convert a dictionary to an XML Element."""
-    if use_lxml and HAS_LXML:
-        elem = lxml_etree.Element(tag)
+    if namespace:
+        full_tag = f"{{{namespace}}}{tag}"
     else:
-        elem = ET.Element(tag)
+        full_tag = tag
+
+    elem = etree.Element(full_tag)
 
     # Set attributes
     for attr in ("datestamp", "sourcename", "sourcetype"):
@@ -427,45 +403,32 @@ def _dict_to_element(
 
         if isinstance(value, dict):
             child = _dict_to_element(
-                child_tag, value, short_names=short_names, use_lxml=use_lxml
+                child_tag, value, short_names=short_names, namespace=namespace
             )
             elem.append(child)
         elif isinstance(value, list):
             for item in value:
                 if isinstance(item, dict):
                     child = _dict_to_element(
-                        child_tag, item, short_names=short_names, use_lxml=use_lxml
+                        child_tag, item, short_names=short_names, namespace=namespace
                     )
                 else:
-                    if use_lxml and HAS_LXML:
-                        child = lxml_etree.Element(child_tag)
+                    if namespace:
+                        child_full_tag = f"{{{namespace}}}{child_tag}"
                     else:
-                        child = ET.Element(child_tag)
+                        child_full_tag = child_tag
+
+                    child = etree.Element(child_full_tag)
                     child.text = str(item)
                 elem.append(child)
         else:
-            if use_lxml and HAS_LXML:
-                child = lxml_etree.Element(child_tag)
+            if namespace:
+                child_full_tag = f"{{{namespace}}}{child_tag}"
             else:
-                child = ET.Element(child_tag)
+                child_full_tag = child_tag
+
+            child = etree.Element(child_full_tag)
             child.text = str(value)
             elem.append(child)
 
     return elem
-
-
-def _indent_element(elem: "Element", level: int = 0) -> None:
-    """Add indentation to XML Element (for stdlib pretty-printing)."""
-    indent = "\n" + "  " * level
-    if len(elem):
-        if not elem.text or not elem.text.strip():
-            elem.text = indent + "  "
-        if not elem.tail or not elem.tail.strip():
-            elem.tail = indent
-        for child in elem:
-            _indent_element(child, level + 1)
-        if not child.tail or not child.tail.strip():
-            child.tail = indent
-    else:
-        if level and (not elem.tail or not elem.tail.strip()):
-            elem.tail = indent
