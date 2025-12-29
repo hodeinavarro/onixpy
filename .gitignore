@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+*Specification_*.md
+*Specification_*.pdf
+
+odoo-examples
+test_odoo.py
