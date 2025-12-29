@@ -2,11 +2,14 @@
 
 Contains the Header and its nested composites: Sender, Addressee, and their
 identifier composites.
+
+All fields use Field(alias=...) to define the XML reference tag name.
+This is the single source of truth for tag/field name mapping.
 """
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from onix.lists import get_code
 
@@ -22,11 +25,11 @@ class SenderIdentifier(BaseModel):
     - IDValue (H.3): The identifier value - required
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    sender_id_type: str
-    id_type_name: str | None = None
-    id_value: str
+    sender_id_type: str = Field(alias="SenderIDType")
+    id_type_name: str | None = Field(default=None, alias="IDTypeName")
+    id_value: str = Field(alias="IDValue")
 
     @field_validator("sender_id_type")
     @classmethod
@@ -51,13 +54,15 @@ class Sender(BaseModel):
     - EmailAddress (H.6): Contact email - optional
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    sender_identifiers: list[SenderIdentifier] = []
-    sender_name: str | None = None
-    contact_name: str | None = None
-    telephone_number: str | None = None
-    email_address: str | None = None
+    sender_identifiers: list[SenderIdentifier] = Field(
+        default_factory=list, alias="SenderIdentifier"
+    )
+    sender_name: str | None = Field(default=None, alias="SenderName")
+    contact_name: str | None = Field(default=None, alias="ContactName")
+    telephone_number: str | None = Field(default=None, alias="TelephoneNumber")
+    email_address: str | None = Field(default=None, alias="EmailAddress")
 
 
 class AddresseeIdentifier(BaseModel):
@@ -71,11 +76,11 @@ class AddresseeIdentifier(BaseModel):
     - IDValue (H.9): The identifier value - required
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    addressee_id_type: str
-    id_type_name: str | None = None
-    id_value: str
+    addressee_id_type: str = Field(alias="AddresseeIDType")
+    id_type_name: str | None = Field(default=None, alias="IDTypeName")
+    id_value: str = Field(alias="IDValue")
 
     @field_validator("addressee_id_type")
     @classmethod
@@ -102,13 +107,15 @@ class Addressee(BaseModel):
     - EmailAddress (H.12): Contact email - optional
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    addressee_identifiers: list[AddresseeIdentifier] = []
-    addressee_name: str | None = None
-    contact_name: str | None = None
-    telephone_number: str | None = None
-    email_address: str | None = None
+    addressee_identifiers: list[AddresseeIdentifier] = Field(
+        default_factory=list, alias="AddresseeIdentifier"
+    )
+    addressee_name: str | None = Field(default=None, alias="AddresseeName")
+    contact_name: str | None = Field(default=None, alias="ContactName")
+    telephone_number: str | None = Field(default=None, alias="TelephoneNumber")
+    email_address: str | None = Field(default=None, alias="EmailAddress")
 
 
 class Header(BaseModel):
@@ -129,17 +136,19 @@ class Header(BaseModel):
     - DefaultCurrencyCode (H.19, 0…1): Default currency (List 96)
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    sender: Sender
-    addressees: list[Addressee] = []
-    message_number: str | None = None
-    message_repeat: str | None = None
-    sent_date_time: str
-    message_note: str | None = None
-    default_language_of_text: str | None = None
-    default_price_type: str | None = None
-    default_currency_code: str | None = None
+    sender: Sender = Field(alias="Sender")
+    addressees: list[Addressee] = Field(default_factory=list, alias="Addressee")
+    message_number: str | None = Field(default=None, alias="MessageNumber")
+    message_repeat: str | None = Field(default=None, alias="MessageRepeat")
+    sent_date_time: str = Field(alias="SentDateTime")
+    message_note: str | None = Field(default=None, alias="MessageNote")
+    default_language_of_text: str | None = Field(
+        default=None, alias="DefaultLanguageOfText"
+    )
+    default_price_type: str | None = Field(default=None, alias="DefaultPriceType")
+    default_currency_code: str | None = Field(default=None, alias="DefaultCurrencyCode")
 
     @field_validator("default_language_of_text")
     @classmethod

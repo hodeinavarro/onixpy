@@ -19,10 +19,18 @@ Tag resolution:
 - to_short_tag: Convert reference tag to short tag
 - to_reference_tag: Convert short tag to reference tag
 
+Field mapping:
+- tag_to_field_name: Convert XML tag to Python field name
+- field_name_to_tag: Convert Python field name to XML tag
+
 All parse/serialize functions accept a `short_names=True` flag to work
 with short tag names instead of the default reference names.
 """
 
+from onix.parsers.fields import (
+    field_name_to_tag,
+    tag_to_field_name,
+)
 from onix.parsers.json import (
     json_to_message,
     message_to_dict,
@@ -58,4 +66,7 @@ __all__ = [
     "to_reference_tag",
     "is_short_tag",
     "is_reference_tag",
+    # Fields
+    "tag_to_field_name",
+    "field_name_to_tag",
 ]

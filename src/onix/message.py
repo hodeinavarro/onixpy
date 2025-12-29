@@ -1,13 +1,13 @@
 """ONIX message models.
 
 Core Pydantic models representing an ONIX for Books message structure.
-Models use reference tag names by default; short-tag serialization is
-controlled via parser/serializer options.
+Models use reference tag names via Field(alias=...) which is the single
+source of truth for XML tag/field name mapping.
 """
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from onix.header import Header
 from onix.product import Product
@@ -22,7 +22,7 @@ class ONIXAttributes(BaseModel):
     - sourcetype: Code from List 3 indicating the type of source
     """
 
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     datestamp: str | None = None
     sourcename: str | None = None
@@ -53,9 +53,9 @@ class ONIXMessage(ONIXAttributes):
     """
 
     release: str = "3.1"
-    header: Header
-    products: list[Product] = []
-    no_product: bool = False
+    header: Header = Field(alias="Header")
+    products: list[Product] = Field(default_factory=list, alias="Product")
+    no_product: bool = Field(default=False, alias="NoProduct")
 
     @model_validator(mode="after")
     def _validate_products_no_product(self) -> "ONIXMessage":

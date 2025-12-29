@@ -19,7 +19,7 @@ class ONIXAttributes(BaseModel):
     - sourcetype: Code from List 3 indicating the type of source
     """
 
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     datestamp: str | None = None
     sourcename: str | None = None

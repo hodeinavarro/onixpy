@@ -74,13 +74,17 @@ class TestHeaderValidation:
         """Header requires a sender."""
         with pytest.raises(ValidationError) as exc_info:
             Header(sent_date_time="20231201T120000Z")
-        assert "sender" in str(exc_info.value)
+        # Check for either field name or alias in error message
+        error_str = str(exc_info.value).lower()
+        assert "sender" in error_str
 
     def test_header_requires_sent_date_time(self):
         """Header requires sent_date_time."""
         with pytest.raises(ValidationError) as exc_info:
             Header(sender=Sender(sender_name="Test"))
-        assert "sent_date_time" in str(exc_info.value)
+        # Check for either field name or alias in error message
+        error_str = str(exc_info.value).lower()
+        assert "sentdatetime" in error_str or "sent_date_time" in error_str
 
     def test_valid_header(self):
         """Valid header with required fields."""
