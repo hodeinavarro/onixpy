@@ -165,6 +165,25 @@ print(isni.heading)  # "ISNI"
 - Use `from __future__ import annotations` for forward references
 - Pattern matching (`match`/`case`) where it improves readability
 
+### Pydantic Field Style
+- Always end `Field()` declarations with trailing commas
+- Use multi-line format for all Field declarations:
+  ```python
+  # Correct:
+  name_id_type: str = Field(
+      alias="NameIDType",
+  )
+
+  title: str | None = Field(
+      default=None,
+      alias="Title",
+  )
+
+  # Incorrect:
+  name_id_type: str = Field(alias="NameIDType")
+  ```
+- This ensures consistent formatting and cleaner diffs when fields are modified
+
 ### Test Structure
 - Test files: `test_*.py` in `tests/`
 - Test classes: `Test*` prefix

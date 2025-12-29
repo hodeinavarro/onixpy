@@ -39,13 +39,20 @@ from onix.parsers.fields import (
 )
 from onix.parsers.tags import to_reference_tag, to_short_tag
 from onix.product import (
+    AffiliationIdentifier,
+    AlternativeName,
     Collection,
     Contributor,
+    ContributorDate,
+    ContributorPlace,
     DescriptiveDetail,
     Extent,
     Measure,
+    NameIdentifier,
+    Prize,
     Product,
     ProductIdentifier,
+    ProfessionalAffiliation,
     Publisher,
     PublishingDate,
     PublishingDetail,
@@ -53,6 +60,7 @@ from onix.product import (
     RelatedProduct,
     TitleDetail,
     TitleElement,
+    Website,
 )
 
 if TYPE_CHECKING:
@@ -82,6 +90,14 @@ def _register_models() -> None:
     register_model(TitleDetail)
     register_model(TitleElement)
     register_model(Contributor)
+    register_model(NameIdentifier)
+    register_model(AlternativeName)
+    register_model(ContributorDate)
+    register_model(ProfessionalAffiliation)
+    register_model(AffiliationIdentifier)
+    register_model(Prize)
+    register_model(Website)
+    register_model(ContributorPlace)
     register_model(Measure)
     register_model(Extent)
     register_model(Collection)
@@ -106,6 +122,25 @@ def _register_models() -> None:
     register_plural_mapping("TitleDetail", "title_details")
     register_plural_mapping("TitleElement", "title_elements")
     register_plural_mapping("Contributor", "contributors")
+    register_plural_mapping("ContributorRole", "contributor_role")
+    register_plural_mapping("FromLanguage", "from_language")
+    register_plural_mapping("ToLanguage", "to_language")
+    register_plural_mapping("NameIdentifier", "name_identifiers")
+    register_plural_mapping("CorporateName", "corporate_name")
+    register_plural_mapping("CorporateNameInverted", "corporate_name_inverted")
+    register_plural_mapping("AlternativeName", "alternative_names")
+    register_plural_mapping("ContributorDate", "contributor_dates")
+    register_plural_mapping("ProfessionalAffiliation", "professional_affiliations")
+    register_plural_mapping("ProfessionalPosition", "professional_position")
+    register_plural_mapping("AffiliationIdentifier", "affiliation_identifiers")
+    register_plural_mapping("Prize", "prizes")
+    register_plural_mapping("BiographicalNote", "biographical_note")
+    register_plural_mapping("Website", "websites")
+    register_plural_mapping("WebsiteDescription", "website_description")
+    register_plural_mapping("WebsiteLink", "website_link")
+    register_plural_mapping("ContributorDescription", "contributor_description")
+    register_plural_mapping("ContributorPlace", "contributor_places")
+    register_plural_mapping("LocationName", "location_name")
     register_plural_mapping("Measure", "measures")
     register_plural_mapping("Extent", "extents")
     register_plural_mapping("Collection", "collections")

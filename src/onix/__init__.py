@@ -47,13 +47,20 @@ from onix.header import (
 )
 from onix.message import ONIXAttributes, ONIXMessage
 from onix.product import (
+    AffiliationIdentifier,
+    AlternativeName,
     Collection,
     Contributor,
+    ContributorDate,
+    ContributorPlace,
     DescriptiveDetail,
     Extent,
     Measure,
+    NameIdentifier,
+    Prize,
     Product,
     ProductIdentifier,
+    ProfessionalAffiliation,
     Publisher,
     PublishingDate,
     PublishingDetail,
@@ -61,6 +68,7 @@ from onix.product import (
     RelatedProduct,
     TitleDetail,
     TitleElement,
+    Website,
 )
 
 __all__ = [
@@ -81,6 +89,14 @@ __all__ = [
     "TitleDetail",
     "TitleElement",
     "Contributor",
+    "NameIdentifier",
+    "AlternativeName",
+    "ContributorDate",
+    "ProfessionalAffiliation",
+    "AffiliationIdentifier",
+    "Prize",
+    "Website",
+    "ContributorPlace",
     "Measure",
     "Extent",
     "Collection",

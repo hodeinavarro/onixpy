@@ -1,7 +1,7 @@
 """ONIX DescriptiveDetail composite models.
 
-Contains product descriptive information including titles, contributors,
-collections, and measurements.
+Contains product descriptive information including titles, collections,
+measurements, and extent.
 """
 
 from __future__ import annotations
@@ -10,6 +10,11 @@ from pydantic import Field, field_validator
 
 from onix._base import ONIXModel
 from onix.lists import get_code
+from onix.product.contributor import Contributor
+
+# =============================================================================
+# Title Composites
+# =============================================================================
 
 
 class TitleElement(ONIXModel):
@@ -52,45 +57,9 @@ class TitleDetail(ONIXModel):
     )
 
 
-class Contributor(ONIXModel):
-    """Contributor composite.
-
-    Describes a contributor to the product (author, editor, illustrator, etc.).
-
-    Elements:
-    - ContributorRole (B.206): Code from List 17 - required
-    - PersonName (B.208): Name of contributor person
-    - CorporateName (B.209): Name of contributor organization
-    - ContributorIdentifier (0…n): Identifiers for the contributor
-    - NameIdentifier (0…n): Name identifiers
-    - BiographicalNote (B.215): Biographical information
-    """
-
-    contributor_role: str = Field(
-        alias="ContributorRole",
-    )
-    person_name: str | None = Field(
-        default=None,
-        alias="PersonName",
-    )
-    corporate_name: str | None = Field(
-        default=None,
-        alias="CorporateName",
-    )
-    biographical_note: str | None = Field(
-        default=None,
-        alias="BiographicalNote",
-    )
-
-    @field_validator("contributor_role")
-    @classmethod
-    def validate_contributor_role(cls, v: str) -> str:
-        """Validate contributor_role is a valid List 17 code."""
-        if get_code(17, v) is None:
-            raise ValueError(
-                f"Invalid ContributorRole: '{v}' is not a valid List 17 code"
-            )
-        return v
+# =============================================================================
+# Measure and Extent Composites
+# =============================================================================
 
 
 class Measure(ONIXModel):

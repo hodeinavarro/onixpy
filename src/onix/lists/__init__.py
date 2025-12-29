@@ -24,14 +24,20 @@ from __future__ import annotations
 from onix.lists.list1 import List1, NotificationOrUpdateType
 from onix.lists.list5 import List5, ProductIdentifierType
 from onix.lists.list17 import ContributorRole, List17
+from onix.lists.list18 import List18, NameType
+from onix.lists.list19 import List19, UnnamedPersons
 from onix.lists.list44 import List44, NameIdentifierType
 from onix.lists.list45 import List45, PublishingRole
 from onix.lists.list48 import List48, MeasureType
+from onix.lists.list49 import List49, RegionCode
 from onix.lists.list50 import List50, MeasureUnit
 from onix.lists.list58 import List58, PriceType
+from onix.lists.list73 import List73, WebsiteRole
 from onix.lists.list74 import LanguageCode, List74
+from onix.lists.list75 import ContributorDateRole, List75
 from onix.lists.list96 import CurrencyCode, List96
 from onix.lists.list148 import CollectionType, List148
+from onix.lists.list151 import ContributorPlaceRelator, List151
 from onix.lists.models import CodeList, CodeListEntry
 
 # Registry of all code lists (by number)
@@ -39,14 +45,20 @@ _CODE_LISTS: dict[int, CodeList] = {
     1: List1,
     5: List5,
     17: List17,
+    18: List18,
+    19: List19,
     44: List44,
     45: List45,
     48: List48,
+    49: List49,
     50: List50,
     58: List58,
+    73: List73,
     74: List74,
+    75: List75,
     96: List96,
     148: List148,
+    151: List151,
 }
 
 
@@ -105,26 +117,38 @@ __all__ = [
     "List1",
     "List5",
     "List17",
+    "List18",
+    "List19",
     "List44",
     "List45",
     "List48",
+    "List49",
     "List50",
     "List58",
+    "List73",
     "List74",
+    "List75",
     "List96",
     "List148",
+    "List151",
     # Lists by name
     "NotificationOrUpdateType",
     "ProductIdentifierType",
     "ContributorRole",
+    "NameType",
+    "UnnamedPersons",
     "NameIdentifierType",
     "PublishingRole",
     "MeasureType",
+    "RegionCode",
     "MeasureUnit",
     "PriceType",
+    "WebsiteRole",
     "LanguageCode",
+    "ContributorDateRole",
     "CurrencyCode",
     "CollectionType",
+    "ContributorPlaceRelator",
     # Functions
     "get_list",
     "get_code",

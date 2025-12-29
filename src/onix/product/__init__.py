@@ -26,9 +26,19 @@ Example:
     ... )
 """
 
+from onix.product.contributor import (
+    AffiliationIdentifier,
+    AlternativeName,
+    Contributor,
+    ContributorDate,
+    ContributorPlace,
+    NameIdentifier,
+    Prize,
+    ProfessionalAffiliation,
+    Website,
+)
 from onix.product.descriptive_detail import (
     Collection,
-    Contributor,
     DescriptiveDetail,
     Extent,
     Measure,
@@ -51,6 +61,14 @@ __all__ = [
     "TitleDetail",
     "TitleElement",
     "Contributor",
+    "NameIdentifier",
+    "AlternativeName",
+    "ContributorDate",
+    "ProfessionalAffiliation",
+    "AffiliationIdentifier",
+    "Prize",
+    "Website",
+    "ContributorPlace",
     "Measure",
     "Extent",
     "Collection",
