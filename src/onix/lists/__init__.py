@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from onix.lists.list1 import List1, NotificationOrUpdateType
 from onix.lists.list5 import List5, ProductIdentifierType
+from onix.lists.list15 import List15, TitleType
 from onix.lists.list17 import ContributorRole, List17
 from onix.lists.list18 import List18, NameType
 from onix.lists.list19 import List19, UnnamedPersons
@@ -37,6 +38,7 @@ from onix.lists.list74 import LanguageCode, List74
 from onix.lists.list75 import ContributorDateRole, List75
 from onix.lists.list96 import CurrencyCode, List96
 from onix.lists.list148 import CollectionType, List148
+from onix.lists.list149 import List149, TitleElementLevel
 from onix.lists.list151 import ContributorPlaceRelator, List151
 from onix.lists.models import CodeList, CodeListEntry
 
@@ -44,6 +46,7 @@ from onix.lists.models import CodeList, CodeListEntry
 _CODE_LISTS: dict[int, CodeList] = {
     1: List1,
     5: List5,
+    15: List15,
     17: List17,
     18: List18,
     19: List19,
@@ -58,6 +61,7 @@ _CODE_LISTS: dict[int, CodeList] = {
     75: List75,
     96: List96,
     148: List148,
+    149: List149,
     151: List151,
 }
 
@@ -116,6 +120,7 @@ __all__ = [
     # Lists by number
     "List1",
     "List5",
+    "List15",
     "List17",
     "List18",
     "List19",
@@ -130,10 +135,12 @@ __all__ = [
     "List75",
     "List96",
     "List148",
+    "List149",
     "List151",
     # Lists by name
     "NotificationOrUpdateType",
     "ProductIdentifierType",
+    "TitleType",
     "ContributorRole",
     "NameType",
     "UnnamedPersons",
@@ -148,6 +155,7 @@ __all__ = [
     "ContributorDateRole",
     "CurrencyCode",
     "CollectionType",
+    "TitleElementLevel",
     "ContributorPlaceRelator",
     # Functions
     "get_list",

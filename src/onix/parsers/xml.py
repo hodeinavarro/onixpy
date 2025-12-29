@@ -38,30 +38,25 @@ from onix.parsers.fields import (
     tag_to_field_name,
 )
 from onix.parsers.tags import to_reference_tag, to_short_tag
-from onix.product import (
+from onix.product.b1 import (
     AffiliationIdentifier,
     AlternativeName,
     Collection,
     Contributor,
     ContributorDate,
     ContributorPlace,
-    DescriptiveDetail,
     Extent,
     Measure,
     NameIdentifier,
     Prize,
-    Product,
-    ProductIdentifier,
     ProfessionalAffiliation,
-    Publisher,
-    PublishingDate,
-    PublishingDetail,
-    RelatedMaterial,
-    RelatedProduct,
     TitleDetail,
     TitleElement,
     Website,
 )
+from onix.product.b4 import Publisher, PublishingDate, PublishingDetail
+from onix.product.b5 import RelatedMaterial, RelatedProduct
+from onix.product.product import Product, ProductIdentifier
 
 if TYPE_CHECKING:
     from lxml.etree import _Element as Element
@@ -85,8 +80,7 @@ def _register_models() -> None:
     register_model(Product)
     register_model(ProductIdentifier)
 
-    # DescriptiveDetail composites
-    register_model(DescriptiveDetail)
+    # Block 1: Product description composites
     register_model(TitleDetail)
     register_model(TitleElement)
     register_model(Contributor)
@@ -102,12 +96,12 @@ def _register_models() -> None:
     register_model(Extent)
     register_model(Collection)
 
-    # PublishingDetail composites
+    # Block 4: PublishingDetail composites
     register_model(PublishingDetail)
     register_model(Publisher)
     register_model(PublishingDate)
 
-    # RelatedMaterial composites
+    # Block 5: RelatedMaterial composites
     register_model(RelatedMaterial)
     register_model(RelatedProduct)
 

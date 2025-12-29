@@ -26,32 +26,25 @@ Example:
     ... )
 """
 
-from onix.product.contributor import (
+from onix.product.b1 import (
     AffiliationIdentifier,
     AlternativeName,
+    Collection,
     Contributor,
     ContributorDate,
     ContributorPlace,
+    Extent,
+    Measure,
     NameIdentifier,
     Prize,
     ProfessionalAffiliation,
-    Website,
-)
-from onix.product.descriptive_detail import (
-    Collection,
-    DescriptiveDetail,
-    Extent,
-    Measure,
     TitleDetail,
     TitleElement,
+    Website,
 )
+from onix.product.b4 import Publisher, PublishingDate, PublishingDetail
+from onix.product.b5 import RelatedMaterial, RelatedProduct
 from onix.product.product import Product, ProductIdentifier
-from onix.product.publishing_detail import (
-    Publisher,
-    PublishingDate,
-    PublishingDetail,
-)
-from onix.product.related_material import RelatedMaterial, RelatedProduct
 
 __all__ = [
     "Product",

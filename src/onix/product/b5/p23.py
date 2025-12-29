@@ -1,6 +1,8 @@
-"""ONIX RelatedMaterial composite models.
+"""ONIX Block 5, P.23: Related products.
 
-Contains information about related products, materials, and cross-references.
+RelatedMaterial composite with RelatedProduct.
+Note: This currently contains all Block 5 composites. Will split P.22 (Related works)
+when that section is implemented.
 """
 
 from __future__ import annotations

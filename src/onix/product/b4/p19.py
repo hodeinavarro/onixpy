@@ -1,7 +1,8 @@
-"""ONIX PublishingDetail composite models.
+"""ONIX Block 4, P.19: Publisher.
 
-Contains publishing-related information including publishers, imprints,
-and publication dates.
+PublishingDetail composite with Publisher and PublishingDate.
+Note: This currently contains all Block 4 composites. Will be split into
+P.19, P.20, P.21 as those sections are implemented.
 """
 
 from __future__ import annotations

@@ -53,7 +53,6 @@ from onix.product import (
     Contributor,
     ContributorDate,
     ContributorPlace,
-    DescriptiveDetail,
     Extent,
     Measure,
     NameIdentifier,
@@ -84,8 +83,7 @@ __all__ = [
     # Product models
     "Product",
     "ProductIdentifier",
-    # DescriptiveDetail composites
-    "DescriptiveDetail",
+    # Block 1 composites
     "TitleDetail",
     "TitleElement",
     "Contributor",

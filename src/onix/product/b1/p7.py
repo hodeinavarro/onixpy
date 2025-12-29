@@ -1,7 +1,15 @@
-"""ONIX Contributor composite and related models.
+"""ONIX Block 1, P.7: Authorship.
 
-Contains contributor information including names, identifiers, dates,
-affiliations, and geographical associations.
+Contributor composite and all nested composites:
+- Contributor: Main authorship composite
+- NameIdentifier: Person/organization identifiers
+- AlternativeName: Pseudonyms, real names, authority-controlled forms
+- ContributorDate: Birth/death dates
+- ProfessionalAffiliation: Professional positions and affiliations
+- AffiliationIdentifier: Organization identifiers
+- Prize: Awards won by contributor
+- Website: Contributor websites
+- ContributorPlace: Geographical associations
 """
 
 from __future__ import annotations
