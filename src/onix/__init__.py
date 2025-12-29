@@ -46,16 +46,49 @@ from onix.header import (
     SenderIdentifier,
 )
 from onix.message import ONIXAttributes, ONIXMessage
-from onix.product import Product, ProductIdentifier
+from onix.product import (
+    Collection,
+    Contributor,
+    DescriptiveDetail,
+    Extent,
+    Measure,
+    Product,
+    ProductIdentifier,
+    Publisher,
+    PublishingDate,
+    PublishingDetail,
+    RelatedMaterial,
+    RelatedProduct,
+    TitleDetail,
+    TitleElement,
+)
 
 __all__ = [
+    # Core message models
     "ONIXMessage",
+    "ONIXAttributes",
+    # Header composites
     "Header",
     "Sender",
     "SenderIdentifier",
     "Addressee",
     "AddresseeIdentifier",
+    # Product models
     "Product",
     "ProductIdentifier",
-    "ONIXAttributes",
+    # DescriptiveDetail composites
+    "DescriptiveDetail",
+    "TitleDetail",
+    "TitleElement",
+    "Contributor",
+    "Measure",
+    "Extent",
+    "Collection",
+    # PublishingDetail composites
+    "PublishingDetail",
+    "Publisher",
+    "PublishingDate",
+    # RelatedMaterial composites
+    "RelatedMaterial",
+    "RelatedProduct",
 ]

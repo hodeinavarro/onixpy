@@ -9,6 +9,9 @@ from __future__ import annotations
 from pydantic import Field
 
 from onix._base import ONIXModel
+from onix.product.descriptive_detail import DescriptiveDetail
+from onix.product.publishing_detail import PublishingDetail
+from onix.product.related_material import RelatedMaterial
 
 
 class ProductIdentifier(ONIXModel):
@@ -91,20 +94,20 @@ class Product(ONIXModel):
         min_length=1,
     )
 
-    # Block 2: DescriptiveDetail (imported to avoid circular imports)
-    descriptive_detail: object | None = Field(
+    # Block 2: DescriptiveDetail
+    descriptive_detail: DescriptiveDetail | None = Field(
         default=None,
         alias="DescriptiveDetail",
     )
 
-    # Block 3: PublishingDetail (imported to avoid circular imports)
-    publishing_detail: object | None = Field(
+    # Block 3: PublishingDetail
+    publishing_detail: PublishingDetail | None = Field(
         default=None,
         alias="PublishingDetail",
     )
 
-    # Block 4: RelatedMaterial (imported to avoid circular imports)
-    related_material: object | None = Field(
+    # Block 4: RelatedMaterial
+    related_material: RelatedMaterial | None = Field(
         default=None,
         alias="RelatedMaterial",
     )

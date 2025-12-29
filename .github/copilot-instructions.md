@@ -53,6 +53,16 @@ src/onix/
 - `ProductIdentifier`: Product identifier with `product_id_type` (List 5), `id_value`, optional `id_type_name`
 - `ONIXAttributes`: Mixin for shared attributes (`datestamp`, `sourcename`, `sourcetype`)
 
+**Public API Convention**: All commonly-used ONIX models are exposed at the package level via `src/onix/__init__.py`. When adding new models to product blocks (DescriptiveDetail, PublishingDetail, etc.), remember to:
+1. Export them from `src/onix/product/__init__.py`
+2. Re-export them from `src/onix/__init__.py`
+3. Update both `__all__` lists
+
+This enables users to import models directly from `onix` rather than navigating submodules:
+```python
+from onix import Product, DescriptiveDetail, TitleDetail, Contributor
+```
+
 ## Development Workflow
 
 ### Environment Setup
