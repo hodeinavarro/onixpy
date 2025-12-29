@@ -24,7 +24,7 @@ from onix.parsers import (
 from onix.product import Product, ProductIdentifier
 from onix.validation import validate_xml_file, validate_xml_string
 
-from .conftest import make_header, make_product, make_product_dict
+from ..conftest import make_header, make_product, make_product_dict
 
 
 class TestXMLReferenceRoundtrips:

@@ -21,7 +21,7 @@ from onix.parsers import (
     xml_to_message,
 )
 
-from .conftest import make_header, make_header_dict, make_product, make_product_dict
+from ..conftest import make_header, make_header_dict, make_product, make_product_dict
 
 
 class TestTagResolver:

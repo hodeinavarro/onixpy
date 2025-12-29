@@ -100,7 +100,7 @@ cd pyonix
 uv sync
 
 # Run tests
-uv run pytest
+uv run pytest --cov=src/onix --cov-report=term-missing --cov-report=html
 
 # Code quality
 uv run ruff check .

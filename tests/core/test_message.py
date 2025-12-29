@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from onix import Header, ONIXMessage, Sender
 
-from .conftest import make_header, make_product
+from ..conftest import make_header, make_product
 
 
 class TestONIXMessageValidation:

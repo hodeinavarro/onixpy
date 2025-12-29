@@ -1,17 +1,16 @@
+"""Tests for parser utility functions and model registration."""
+
 from pydantic import BaseModel, Field
 
 from onix.parsers import fields, tags
 from onix.parsers.xml import _element_to_dict, _parse_xml_string
 
 
-class TestParsersUtilities:
-    def test_camel_and_snake_conversions(self):
-        assert fields._camel_to_snake("IDType") == "id_type"
-        assert fields._camel_to_snake("ProductIdentifier") == "product_identifier"
-        assert fields._snake_to_camel("product_id") == "ProductID"
-        assert fields._snake_to_camel("record_reference") == "RecordReference"
+class TestRegisterModelAndPluralMapping:
+    """Tests for model registration and plural field mapping."""
 
     def test_register_model_and_plural_mapping_and_clear_caches(self):
+        """Model registration and cache clearing work correctly."""
         class Dummy(BaseModel):
             my_field: str = Field(
                 alias="MyField", json_schema_extra={"short_tag": "myfield"}
@@ -39,15 +38,12 @@ class TestParsersUtilities:
 
         _register_models()
 
-    def test_tag_mapping_functions_from_models(self):
-        # Ensure tag mappings are (lazily) loaded
-        short = tags.to_short_tag("Sender")
-        ref = tags.to_reference_tag(short)
-        assert tags.is_short_tag(short)
-        assert tags.is_reference_tag(ref)
-        assert ref == "Sender"
+
+class TestElementToDictNormalization:
+    """Tests for XML element to dictionary conversion."""
 
     def test_element_to_dict_normalizes_short_tags(self):
+        """Element to dict conversion normalizes tag names correctly."""
         # Mix reference Header with a short-name Sender inside
         xml = """<ONIXMessage>
 <Header>

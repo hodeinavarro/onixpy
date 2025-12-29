@@ -19,7 +19,7 @@ from onix import Header, ONIXMessage, Product, ProductIdentifier, Sender
 from onix.parsers import message_to_xml_string, xml_to_message
 from onix.validation.rng import validate_xml_string
 
-from .conftest import make_header, make_product
+from ..conftest import make_header, make_product
 
 
 class TestInvalidCodeListValues:

@@ -33,7 +33,7 @@ from onix.validation import (
     validate_xml_string,
 )
 
-from .conftest import make_header, make_header_dict, make_product, make_product_dict
+from ..conftest import make_header, make_header_dict, make_product, make_product_dict
 
 pytestmark = pytest.mark.skipif(False, reason="Never skip - lxml is now required")
 

@@ -1,3 +1,5 @@
+"""Tests for XML parsing and serialization internals."""
+
 from pathlib import Path
 
 from lxml import etree
@@ -12,11 +14,14 @@ from onix.parsers.xml import (
     xml_to_message,
 )
 
-from .conftest import make_header, make_product
+from ..conftest import make_header, make_product
 
 
-class TestParsersXMLExtra:
+class TestXMLNormalizationAndElementHandling:
+    """Tests for XML input normalization and element conversion."""
+
     def test_message_to_xml_no_product(self):
+        """XML serialization includes NoProduct element when set."""
         msg = ONIXMessage(release="3.1", header=make_header())
 
         # Explicitly set no_product
@@ -27,6 +32,7 @@ class TestParsersXMLExtra:
         assert "NoProduct" in tags
 
     def test_dict_to_element_namespace_and_short_names(self):
+        """Element creation respects namespace and short name settings."""
         data = {"sender": {"sender_name": "Acme"}}
         # Use short names and a namespace
         elem = _dict_to_element(
@@ -38,6 +44,7 @@ class TestParsersXMLExtra:
         assert child is not None
 
     def test_normalize_input_iterable_combines_products(self):
+        """Parsing multiple XML elements combines products into one message."""
         # Two minimal messages with one product each
         xml1 = _parse_xml_string(
             """<ONIXMessage><Header><Sender><SenderName>A</SenderName></Sender><SentDateTime>20231201</SentDateTime></Header><Product><RecordReference>r1</RecordReference><NotificationType>03</NotificationType><ProductIdentifier><ProductIDType>15</ProductIDType><IDValue>9780000000001</IDValue></ProductIdentifier></Product></ONIXMessage>"""
@@ -51,6 +58,7 @@ class TestParsersXMLExtra:
         assert {p.record_reference for p in msg.products} == {"r1", "r2"}
 
     def test_message_to_xml_string_options(self, tmp_path: Path):
+        """XML string serialization respects declaration and file options."""
         # Minimal valid message
         msg = ONIXMessage(
             release="3.1",

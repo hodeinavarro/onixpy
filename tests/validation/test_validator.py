@@ -1,3 +1,5 @@
+"""Tests for RNG validator implementation details."""
+
 from pathlib import Path
 
 import pytest
@@ -12,17 +14,22 @@ from onix.parsers.rng_validator import (
 )
 
 
-class TestRNGValidatorExtra:
+class TestRNGValidatorImplementation:
+    """Tests for RNG validator implementation details."""
+
     def test_get_rng_validator_file_not_found(self, tmp_path: Path):
+        """Missing schema file raises FileNotFoundError."""
         missing = tmp_path / "no-schema.rng"
         with pytest.raises(FileNotFoundError):
             _get_rng_validator(missing)
 
     def test_get_rng_validator_returns_relaxng(self):
+        """Default validator returns RelaxNG instance."""
         validator = _get_rng_validator()
         assert isinstance(validator, etree.RelaxNG)
 
     def test_validate_xml_element_reports_errors(self):
+        """Invalid elements report validation errors."""
         # Missing Header should cause RNG validation failure
         elem = etree.fromstring(b"<ONIXMessage release='3.1'/>")
         with pytest.raises(RNGValidationError) as exc_info:
@@ -30,15 +37,18 @@ class TestRNGValidatorExtra:
         assert exc_info.value.errors
 
     def test_validate_xml_string_malformed_raises(self):
+        """Malformed XML raises XMLSyntaxError."""
         bad_xml = "<ONIXMessage><Header></ONIXMessage>"
         with pytest.raises(etree.XMLSyntaxError):
             validate_xml_string(bad_xml)
 
     def test_validate_xml_file_not_found(self, tmp_path: Path):
+        """Non-existent file raises FileNotFoundError."""
         with pytest.raises(FileNotFoundError):
             validate_xml_file(tmp_path / "nope.xml")
 
     def test_custom_schema_validation_success_and_failure(self, tmp_path: Path):
+        """Custom schema validation works with success and failure cases."""
         # Create a minimal relax-ng grammar accepting <root/> elements
         rng_path = tmp_path / "simple.rng"
         rng_path.write_text(
@@ -80,6 +90,7 @@ class TestRNGValidatorExtra:
             validate_xml_file(xml_bad_file, schema_path=rng_path)
 
     def test_invalid_rng_raises_relaxngparseerror(self, tmp_path: Path):
+        """Invalid RNG grammar raises RelaxNGParseError."""
         bad_rng = tmp_path / "bad.rng"
         # Well-formed XML but not a valid RNG grammar
         bad_rng.write_text("<root/>", encoding="utf-8")
