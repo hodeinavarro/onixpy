@@ -5,9 +5,9 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from onix import Header, ONIXMessage, Product, Sender
+from onix import Header, ONIXMessage, Sender
 
-from .conftest import make_header
+from .conftest import make_header, make_product
 
 
 class TestONIXMessageValidation:
@@ -21,14 +21,16 @@ class TestONIXMessageValidation:
 
     def test_with_products_no_product_false(self):
         """When products are provided, no_product should be False."""
-        msg = ONIXMessage(header=make_header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[make_product()])
         assert len(msg.products) == 1
         assert msg.no_product is False
 
     def test_cannot_have_products_and_no_product(self):
         """Cannot specify both products and no_product=True."""
         with pytest.raises(ValidationError) as exc_info:
-            ONIXMessage(header=make_header(), products=[Product()], no_product=True)
+            ONIXMessage(
+                header=make_header(), products=[make_product()], no_product=True
+            )
 
         assert "Cannot have both 'products' and 'no_product=True'" in str(
             exc_info.value

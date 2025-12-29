@@ -21,7 +21,7 @@ from onix.parsers import (
     xml_to_message,
 )
 
-from .conftest import make_header, make_header_dict
+from .conftest import make_header, make_header_dict, make_product, make_product_dict
 
 
 class TestTagResolver:
@@ -64,7 +64,13 @@ class TestJSONParser:
 
     def test_parse_from_dict_with_products(self):
         """Parse message with products from dict."""
-        data = {"header": make_header_dict(), "products": [{}, {}]}
+        data = {
+            "header": make_header_dict(),
+            "products": [
+                make_product_dict(record_reference="ref-001"),
+                make_product_dict(record_reference="ref-002"),
+            ],
+        }
         msg = json_to_message(data)
 
         assert len(msg.products) == 2
@@ -73,7 +79,7 @@ class TestJSONParser:
     def test_parse_from_file(self, tmp_path: Path):
         """Parse message from a JSON file."""
         json_file = tmp_path / "message.json"
-        data = {"header": make_header_dict(), "products": [{}]}
+        data = {"header": make_header_dict(), "products": [make_product_dict()]}
         json_file.write_text(json.dumps(data))
 
         msg = json_to_message(str(json_file))
@@ -93,8 +99,17 @@ class TestJSONParser:
         header2 = make_header_dict()
         header2["message_note"] = "Source2"
         messages = [
-            {"header": header1, "products": [{}]},
-            {"header": header2, "products": [{}, {}]},
+            {
+                "header": header1,
+                "products": [make_product_dict(record_reference="ref-001")],
+            },
+            {
+                "header": header2,
+                "products": [
+                    make_product_dict(record_reference="ref-002"),
+                    make_product_dict(record_reference="ref-003"),
+                ],
+            },
         ]
         msg = json_to_message(iter(messages))
 
@@ -113,7 +128,7 @@ class TestJSONSerializer:
 
     def test_message_to_dict(self):
         """Convert message to dict."""
-        msg = ONIXMessage(header=make_header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[make_product()])
         data = message_to_dict(msg)
 
         assert "header" in data
@@ -130,7 +145,7 @@ class TestJSONSerializer:
 
     def test_save_json(self, tmp_path: Path):
         """Save message to JSON file."""
-        msg = ONIXMessage(header=make_header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[make_product()])
         json_file = tmp_path / "output.json"
 
         save_json(msg, json_file)
@@ -144,7 +159,10 @@ class TestJSONSerializer:
         original = ONIXMessage(
             release="3.1",
             header=make_header(message_note="TestSource"),
-            products=[Product(), Product()],
+            products=[
+                make_product(record_reference="ref-001"),
+                make_product(record_reference="ref-002"),
+            ],
         )
 
         json_str = message_to_json(original)
@@ -185,8 +203,22 @@ class TestXMLParser:
                 </Sender>
                 <SentDateTime>20231201T120000Z</SentDateTime>
             </Header>
-            <Product></Product>
-            <Product></Product>
+            <Product>
+                <RecordReference>ref-001</RecordReference>
+                <NotificationType>03</NotificationType>
+                <ProductIdentifier>
+                    <ProductIDType>15</ProductIDType>
+                    <IDValue>9780000000001</IDValue>
+                </ProductIdentifier>
+            </Product>
+            <Product>
+                <RecordReference>ref-002</RecordReference>
+                <NotificationType>03</NotificationType>
+                <ProductIdentifier>
+                    <ProductIDType>15</ProductIDType>
+                    <IDValue>9780000000002</IDValue>
+                </ProductIdentifier>
+            </Product>
         </ONIXMessage>
         """
         msg = xml_to_message(xml_str)
@@ -204,7 +236,14 @@ class TestXMLParser:
                 </Sender>
                 <SentDateTime>20231201T120000Z</SentDateTime>
             </Header>
-            <Product></Product>
+            <Product>
+                <RecordReference>ref-001</RecordReference>
+                <NotificationType>03</NotificationType>
+                <ProductIdentifier>
+                    <ProductIDType>15</ProductIDType>
+                    <IDValue>9780000000001</IDValue>
+                </ProductIdentifier>
+            </Product>
         </ONIXMessage>
         """)
 
@@ -224,10 +263,12 @@ class TestXMLSerializer:
 
     def test_message_to_xml(self):
         """Convert message to XML Element."""
-        msg = ONIXMessage(header=make_header(), products=[Product()])
+        from lxml.etree import QName
+
+        msg = ONIXMessage(header=make_header(), products=[make_product()])
         root = message_to_xml(msg)
 
-        assert root.tag == "ONIXMessage"
+        assert QName(root.tag).localname == "ONIXMessage"
         assert root.get("release") == "3.1"
 
     def test_message_to_xml_string(self):
@@ -240,14 +281,16 @@ class TestXMLSerializer:
 
     def test_message_to_xml_with_short_names(self):
         """Serialize with short tag names."""
+        from lxml.etree import QName
+
         msg = ONIXMessage(header=make_header(), products=[])
         root = message_to_xml(msg, short_names=True)
 
-        assert root.tag == "ONIXmessage"
+        assert QName(root.tag).localname == "ONIXmessage"
 
     def test_save_xml(self, tmp_path: Path):
         """Save message to XML file."""
-        msg = ONIXMessage(header=make_header(), products=[Product()])
+        msg = ONIXMessage(header=make_header(), products=[make_product()])
         xml_file = tmp_path / "output.xml"
 
         save_xml(msg, xml_file)
@@ -262,7 +305,10 @@ class TestXMLSerializer:
         original = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product(), Product()],
+            products=[
+                make_product(record_reference="ref-001"),
+                make_product(record_reference="ref-002"),
+            ],
         )
 
         xml_str = message_to_xml_string(original)

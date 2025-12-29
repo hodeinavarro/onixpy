@@ -21,6 +21,8 @@ will be imported from the ONIX specification later.
 
 from __future__ import annotations
 
+from onix.lists.list1 import List1, NotificationOrUpdateType
+from onix.lists.list5 import List5, ProductIdentifierType
 from onix.lists.list44 import List44, NameIdentifierType
 from onix.lists.list58 import List58, PriceType
 from onix.lists.list74 import LanguageCode, List74
@@ -29,6 +31,8 @@ from onix.lists.models import CodeList, CodeListEntry
 
 # Registry of all code lists (by number)
 _CODE_LISTS: dict[int, CodeList] = {
+    1: List1,
+    5: List5,
     44: List44,
     58: List58,
     74: List74,
@@ -88,11 +92,15 @@ __all__ = [
     "CodeList",
     "CodeListEntry",
     # Lists by number
+    "List1",
+    "List5",
     "List44",
     "List58",
     "List74",
     "List96",
     # Lists by name
+    "NotificationOrUpdateType",
+    "ProductIdentifierType",
     "NameIdentifierType",
     "PriceType",
     "LanguageCode",

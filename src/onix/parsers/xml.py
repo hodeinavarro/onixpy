@@ -32,12 +32,13 @@ from onix.header import (
 from onix.message import ONIXMessage
 from onix.parsers.fields import (
     field_name_to_tag,
+    is_list_field,
     register_model,
     register_plural_mapping,
     tag_to_field_name,
 )
 from onix.parsers.tags import to_reference_tag, to_short_tag
-from onix.product import Product
+from onix.product import Product, ProductIdentifier
 
 if TYPE_CHECKING:
     from lxml.etree import _Element as Element
@@ -56,12 +57,14 @@ def _register_models() -> None:
     register_model(Addressee)
     register_model(AddresseeIdentifier)
     register_model(Product)
+    register_model(ProductIdentifier)
 
     # Register plural mappings for list fields that use singular XML tags
     register_plural_mapping("Product", "products")
     register_plural_mapping("Addressee", "addressees")
     register_plural_mapping("SenderIdentifier", "sender_identifiers")
     register_plural_mapping("AddresseeIdentifier", "addressee_identifiers")
+    register_plural_mapping("ProductIdentifier", "product_identifiers")
 
 
 # Register models at module load time
@@ -136,7 +139,8 @@ def message_to_xml(
     )
     nsmap = {None: namespace}  # Default namespace
 
-    root = etree.Element(root_tag, nsmap=nsmap)
+    # Use Clark notation for the root element tag to ensure namespace is properly set
+    root = etree.Element(f"{{{namespace}}}{root_tag}", nsmap=nsmap)
 
     # Set release attribute
     root.set("release", data.get("release", "3.1"))
@@ -362,9 +366,9 @@ def _element_to_dict(
         children[child_key].append(value)
 
     # Add children to result
-    # Keep as list if multiple values, otherwise flatten to single value
+    # Keep as list if multiple values or if field is a list field, otherwise flatten to single value
     for key, values in children.items():
-        if len(values) > 1:
+        if len(values) > 1 or is_list_field(key):
             result[key] = values
         else:
             result[key] = values[0]

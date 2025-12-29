@@ -108,6 +108,7 @@ def field_name_to_tag(field_name: str) -> str:
 # Caches populated by register_model
 _tag_to_field_cache: dict[str, str] = {}
 _field_to_tag_cache: dict[str, str] = {}
+_list_field_names: set[str] = set()  # Fields that should always be lists
 
 
 def register_model(model_class: type["BaseModel"]) -> None:
@@ -138,6 +139,19 @@ def register_plural_mapping(tag: str, field_name: str) -> None:
     """
     _tag_to_field_cache[tag] = field_name
     _field_to_tag_cache[field_name] = tag
+    _list_field_names.add(field_name)
+
+
+def is_list_field(field_name: str) -> bool:
+    """Check if a field should always be a list.
+
+    Args:
+        field_name: The Python field name
+
+    Returns:
+        True if the field should always be a list
+    """
+    return field_name in _list_field_names
 
 
 def clear_caches() -> None:
@@ -147,5 +161,6 @@ def clear_caches() -> None:
     """
     _tag_to_field_cache.clear()
     _field_to_tag_cache.clear()
+    _list_field_names.clear()
     tag_to_field_name.cache_clear()
     field_name_to_tag.cache_clear()

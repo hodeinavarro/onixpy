@@ -8,27 +8,34 @@ Python library for parsing and working with ONIX for Books metadata (publishing 
 ### Package Layout
 ```
 src/onix/
-├── __init__.py       # Public API: ONIXMessage, Header, Product, ONIXAttributes
+├── __init__.py       # Public API: ONIXMessage, Header, Product, ProductIdentifier, etc.
 ├── message.py        # ONIXMessage, ONIXAttributes models
 ├── header/
 │   ├── __init__.py   # Exports Header, Sender, Addressee, etc.
 │   └── header.py     # Header and nested composites with validation
 ├── product/
-│   ├── __init__.py   # Exports Product
+│   ├── __init__.py   # Exports Product, ProductIdentifier
 │   ├── base.py       # ProductBase with shared ONIX attributes
-│   └── product.py    # Product model (will import blocks)
+│   └── product.py    # Product and ProductIdentifier models
 ├── parsers/
 │   ├── __init__.py   # Parser API: json_to_message, xml_to_message, etc.
+│   ├── fields.py     # Tag/field name mapping and model registration
 │   ├── json.py       # JSON parsing/serialization
 │   ├── xml.py        # XML parsing/serialization (lxml preferred)
 │   └── tags.py       # Reference ↔ short tag name resolver
+├── validation/
+│   ├── __init__.py   # Validation API
+│   └── rng.py        # RELAX NG schema validation
 └── lists/
     ├── __init__.py   # Code list registry and lookup functions
     ├── models.py     # CodeList, CodeListEntry dataclasses
+    ├── list1.py      # List 1: Notification or update type
+    ├── list5.py      # List 5: Product identifier type
     ├── list44.py     # List 44: Name identifier type
     ├── list58.py     # List 58: Price type
     ├── list74.py     # List 74: Language code (ISO 639-2/B)
-    └── list96.py     # List 96: Currency code (ISO 4217)
+    ├── list96.py     # List 96: Currency code (ISO 4217)
+    └── ...           # Additional lists (list2, list9, list12, etc.)
 ```
 
 ### Key Design Decisions
@@ -43,7 +50,8 @@ src/onix/
 - `Header`: Message metadata with nested `Sender` (required), `Addressee` (optional), defaults
 - `Sender`: Sender info with optional `SenderIdentifier` list (validated against List 44)
 - `Addressee`: Addressee info with optional `AddresseeIdentifier` list
-- `Product`: Product record - placeholder for ONIX blocks 1-8
+- `Product`: Product record with `record_reference`, `notification_type`, `product_identifiers` (min 1)
+- `ProductIdentifier`: Product identifier with `product_id_type` (List 5), `id_value`, optional `id_type_name`
 - `ONIXAttributes`: Mixin for shared attributes (`datestamp`, `sourcename`, `sourcetype`)
 
 ## Development Workflow
@@ -74,7 +82,7 @@ uv run ruff format .
 
 ### Creating Messages
 ```python
-from onix import ONIXMessage, Header, Product, Sender
+from onix import ONIXMessage, Header, Product, ProductIdentifier, Sender
 
 msg = ONIXMessage(
     release="3.1",
@@ -82,7 +90,15 @@ msg = ONIXMessage(
         sender=Sender(sender_name="MyPublisher"),
         sent_date_time="20231201T120000Z",
     ),
-    products=[Product(), Product()],
+    products=[
+        Product(
+            record_reference="com.mypublisher.001",
+            notification_type="03",  # Notification confirmed
+            product_identifiers=[
+                ProductIdentifier(product_id_type="15", id_value="9780000000001")
+            ],
+        ),
+    ],
 )
 ```
 
@@ -147,8 +163,88 @@ print(isni.heading)  # "ISNI"
 ## Key Files
 - [src/onix/message.py](../src/onix/message.py) - Core Pydantic models
 - [src/onix/parsers/__init__.py](../src/onix/parsers/__init__.py) - Parser public API
+- [src/onix/parsers/fields.py](../src/onix/parsers/fields.py) - Tag/field mapping and model registration
 - [src/onix/lists/__init__.py](../src/onix/lists/__init__.py) - Code list interface
 - [pyproject.toml](../pyproject.toml) - Project config and dependencies
+
+## Parser Model Registration
+
+When adding new Pydantic models to the ONIX structure, they must be registered with the XML parser for proper tag↔field mapping.
+
+### `register_model(model_class)`
+Registers a model's `Field(alias=...)` definitions for tag/field name conversion:
+```python
+from onix.parsers.fields import register_model
+from onix.product.product import ProductIdentifier
+
+register_model(ProductIdentifier)
+```
+
+### `register_plural_mapping(tag, field_name)`
+For list fields where XML uses singular tags but Python uses plural field names:
+```python
+from onix.parsers.fields import register_plural_mapping
+
+# XML: <ProductIdentifier>...</ProductIdentifier> (repeated)
+# Python: product_identifiers: list[ProductIdentifier]
+register_plural_mapping("ProductIdentifier", "product_identifiers")
+```
+
+This also marks the field as a list field via `is_list_field()`, ensuring single-element lists aren't flattened during XML parsing.
+
+### Registration Location
+Model registration happens in `src/onix/parsers/xml.py` at module load time. When adding new models:
+1. Import the model class
+2. Call `register_model(ModelClass)`
+3. If it's a list field with singular XML tags, call `register_plural_mapping("Tag", "field_name")`
+
+## Minimal Product Requirements
+
+A valid ONIX Product requires (per RNG schema):
+- `record_reference` (str): Unique identifier for the record
+- `notification_type` (str): Code from List 1 (e.g., "03" = Notification confirmed)
+- `product_identifiers` (list[ProductIdentifier]): At least one identifier
+
+### ProductIdentifier Structure
+```python
+class ProductIdentifier(ProductBase):
+    product_id_type: str = Field(alias="ProductIDType")  # List 5
+    id_type_name: str | None = Field(default=None, alias="IDTypeName")
+    id_value: str = Field(alias="IDValue")
+```
+
+### Test Helpers
+Use `make_product()` and `make_product_dict()` from `tests/conftest.py` for creating valid minimal products in tests:
+```python
+from conftest import make_product, make_product_dict
+
+# Create a minimal valid Product model
+product = make_product()
+
+# Create a minimal valid product dict (for JSON/XML parsing tests)
+product_dict = make_product_dict()
+```
+
+## Code List Generation
+
+Generate code lists from ONIX specification using:
+```bash
+cd scripts
+uv run python generate_codelist.py <list_number>
+# Example: uv run python generate_codelist.py 44
+```
+
+Generated lists go to `src/onix/lists/list<N>.py`. Remember to register new lists in `src/onix/lists/__init__.py`.
+
+## XML Namespace Handling
+
+When creating XML elements programmatically for RNG validation, use Clark notation for the root element:
+```python
+namespace = "http://ns.editeur.org/onix/3.1/reference"
+root = etree.Element(f"{{{namespace}}}ONIXMessage", nsmap={None: namespace})
+```
+
+This ensures in-memory elements have proper namespace qualification for RNG schema validation.
 
 ## Collaboration Notes
 - User is new to Pydantic: offer quick guidance (e.g., derive models from `pydantic.BaseModel`, use type hints for fields, leverage `model_validate`/`model_dump` for IO) and propose minimal examples before larger changes.

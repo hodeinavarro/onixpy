@@ -15,13 +15,20 @@ Product structure follows ONIX 3.0 blocks:
 
 Example:
     >>> from onix import Product
-    >>> from onix.product import Product  # Same thing
+    >>> from onix.product import Product, ProductIdentifier
     >>>
-    >>> product = Product()
+    >>> product = Product(
+    ...     record_reference="com.example.001",
+    ...     notification_type="03",
+    ...     product_identifiers=[
+    ...         ProductIdentifier(product_id_type="15", id_value="9780000000001")
+    ...     ],
+    ... )
 """
 
-from onix.product.product import Product
+from onix.product.product import Product, ProductIdentifier
 
 __all__ = [
     "Product",
+    "ProductIdentifier",
 ]

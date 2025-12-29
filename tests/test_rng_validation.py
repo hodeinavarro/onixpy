@@ -17,14 +17,8 @@ import json
 from pathlib import Path
 
 import pytest
-from onix.validation import (
-    RNGValidationError,
-    validate_xml_element,
-    validate_xml_file,
-    validate_xml_string,
-)
 
-from onix import Header, ONIXMessage, Product, Sender
+from onix import Header, ONIXMessage, Sender
 from onix.parsers import (
     json_to_message,
     message_to_xml,
@@ -32,8 +26,14 @@ from onix.parsers import (
     save_xml,
     xml_to_message,
 )
+from onix.validation import (
+    RNGValidationError,
+    validate_xml_element,
+    validate_xml_file,
+    validate_xml_string,
+)
 
-from .conftest import make_header, make_header_dict
+from .conftest import make_header, make_header_dict, make_product, make_product_dict
 
 pytestmark = pytest.mark.skipif(False, reason="Never skip - lxml is now required")
 
@@ -41,39 +41,36 @@ pytestmark = pytest.mark.skipif(False, reason="Never skip - lxml is now required
 class TestRNGValidator:
     """Test RNG validation module functions."""
 
-    @pytest.mark.skip(reason="Product model not yet implemented with required fields")
     def test_validate_minimal_message_element(self):
         """Validate a minimal valid ONIX message as Element."""
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product()],
+            products=[make_product()],
         )
         element = message_to_xml(msg)
 
         # Should not raise
         validate_xml_element(element)
 
-    @pytest.mark.skip(reason="Product model not yet implemented with required fields")
     def test_validate_minimal_message_string(self):
         """Validate a minimal valid ONIX message as string."""
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product()],
+            products=[make_product()],
         )
         xml_str = message_to_xml_string(msg)
 
         # Should not raise
         validate_xml_string(xml_str)
 
-    @pytest.mark.skip(reason="Product model not yet implemented with required fields")
     def test_validate_minimal_message_file(self, tmp_path: Path):
         """Validate a minimal valid ONIX message from file."""
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product()],
+            products=[make_product()],
         )
         xml_file = tmp_path / "message.xml"
         save_xml(msg, xml_file)
@@ -93,7 +90,6 @@ class TestRNGValidator:
         # Should not raise
         validate_xml_string(xml_str)
 
-    @pytest.mark.skip(reason="Product model not yet implemented with required fields")
     def test_validate_message_with_attributes(self):
         """Validate message with ONIX attributes."""
         msg = ONIXMessage(
@@ -101,10 +97,8 @@ class TestRNGValidator:
             header=Header(
                 sender=Sender(sender_name="Test Publisher"),
                 sent_date_time="20231201T120000Z",
-                datestamp="20231201",
-                sourcename="TestSource",
             ),
-            products=[Product()],
+            products=[make_product()],
             datestamp="20231201",
             sourcename="TestSource",
         )
@@ -133,7 +127,7 @@ class TestRNGValidator:
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product()],
+            products=[make_product()],
         )
         element = message_to_xml(msg)
 
@@ -148,7 +142,7 @@ class TestJSONToPydanticToXMLValidation:
         """JSON dict -> Pydantic -> XML should validate."""
         data = {
             "header": make_header_dict(),
-            "products": [{}],
+            "products": [make_product_dict()],
         }
 
         # Parse from JSON
@@ -163,7 +157,7 @@ class TestJSONToPydanticToXMLValidation:
         json_file = tmp_path / "message.json"
         data = {
             "header": make_header_dict(),
-            "products": [{}],
+            "products": [make_product_dict()],
         }
         json_file.write_text(json.dumps(data))
 
@@ -180,9 +174,8 @@ class TestJSONToPydanticToXMLValidation:
             "header": {
                 "sender": {"sender_name": "Test Publisher"},
                 "sent_date_time": "20231201T120000Z",
-                "datestamp": "20231201",
             },
-            "products": [{}],
+            "products": [make_product_dict()],
             "datestamp": "20231201",
             "sourcename": "TestSource",
         }
@@ -195,8 +188,16 @@ class TestJSONToPydanticToXMLValidation:
         """JSON with multiple products -> Pydantic -> XML should validate."""
         data = {
             "header": make_header_dict(),
-            "products": [{}, {}, {}],
+            "products": [
+                make_product_dict(record_reference="ref-001"),
+                make_product_dict(record_reference="ref-002"),
+                make_product_dict(record_reference="ref-003"),
+            ],
         }
+
+        msg = json_to_message(data)
+        xml_str = message_to_xml_string(msg)
+        validate_xml_string(xml_str)
 
         msg = json_to_message(data)
         xml_str = message_to_xml_string(msg)
@@ -216,7 +217,14 @@ class TestXMLToPydanticToXMLValidation:
     </Sender>
     <SentDateTime>20231201T120000Z</SentDateTime>
   </Header>
-  <Product></Product>
+  <Product>
+    <RecordReference>ref-001</RecordReference>
+    <NotificationType>03</NotificationType>
+    <ProductIdentifier>
+      <ProductIDType>15</ProductIDType>
+      <IDValue>9780000000001</IDValue>
+    </ProductIdentifier>
+  </Product>
 </ONIXMessage>"""
 
         # Parse from XML
@@ -237,7 +245,14 @@ class TestXMLToPydanticToXMLValidation:
     </Sender>
     <SentDateTime>20231201T120000Z</SentDateTime>
   </Header>
-  <Product></Product>
+  <Product>
+    <RecordReference>ref-001</RecordReference>
+    <NotificationType>03</NotificationType>
+    <ProductIdentifier>
+      <ProductIDType>15</ProductIDType>
+      <IDValue>9780000000001</IDValue>
+    </ProductIdentifier>
+  </Product>
 </ONIXMessage>"""
         xml_file.write_text(original_xml)
 
@@ -253,13 +268,20 @@ class TestXMLToPydanticToXMLValidation:
         """XML with attributes -> Pydantic -> XML should validate."""
         original_xml = """<?xml version="1.0"?>
 <ONIXMessage release="3.1" datestamp="20231201" sourcename="TestSource">
-  <Header datestamp="20231201">
+  <Header>
     <Sender>
       <SenderName>Test Publisher</SenderName>
     </Sender>
     <SentDateTime>20231201T120000Z</SentDateTime>
   </Header>
-  <Product></Product>
+  <Product>
+    <RecordReference>ref-001</RecordReference>
+    <NotificationType>03</NotificationType>
+    <ProductIdentifier>
+      <ProductIDType>15</ProductIDType>
+      <IDValue>9780000000001</IDValue>
+    </ProductIdentifier>
+  </Product>
 </ONIXMessage>"""
 
         msg = xml_to_message(original_xml)
@@ -276,9 +298,30 @@ class TestXMLToPydanticToXMLValidation:
     </Sender>
     <SentDateTime>20231201T120000Z</SentDateTime>
   </Header>
-  <Product></Product>
-  <Product></Product>
-  <Product></Product>
+  <Product>
+    <RecordReference>ref-001</RecordReference>
+    <NotificationType>03</NotificationType>
+    <ProductIdentifier>
+      <ProductIDType>15</ProductIDType>
+      <IDValue>9780000000001</IDValue>
+    </ProductIdentifier>
+  </Product>
+  <Product>
+    <RecordReference>ref-002</RecordReference>
+    <NotificationType>03</NotificationType>
+    <ProductIdentifier>
+      <ProductIDType>15</ProductIDType>
+      <IDValue>9780000000002</IDValue>
+    </ProductIdentifier>
+  </Product>
+  <Product>
+    <RecordReference>ref-003</RecordReference>
+    <NotificationType>03</NotificationType>
+    <ProductIdentifier>
+      <ProductIDType>15</ProductIDType>
+      <IDValue>9780000000003</IDValue>
+    </ProductIdentifier>
+  </Product>
 </ONIXMessage>"""
 
         msg = xml_to_message(original_xml)
@@ -294,7 +337,7 @@ class TestPydanticToXMLValidation:
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product()],
+            products=[make_product()],
         )
 
         xml_str = message_to_xml_string(msg)
@@ -318,7 +361,7 @@ class TestPydanticToXMLValidation:
                 ),
                 sent_date_time="20231201T120000Z",
             ),
-            products=[Product()],
+            products=[make_product()],
         )
 
         xml_str = message_to_xml_string(msg)
@@ -335,7 +378,7 @@ class TestPydanticToXMLValidation:
                 sent_date_time="20231201T120000Z",
                 addressees=[Addressee(addressee_name="Test Recipient")],
             ),
-            products=[Product()],
+            products=[make_product()],
         )
 
         xml_str = message_to_xml_string(msg)
@@ -346,7 +389,11 @@ class TestPydanticToXMLValidation:
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product(), Product(), Product()],
+            products=[
+                make_product(record_reference="ref-001"),
+                make_product(record_reference="ref-002"),
+                make_product(record_reference="ref-003"),
+            ],
         )
 
         xml_str = message_to_xml_string(msg)
@@ -370,11 +417,8 @@ class TestPydanticToXMLValidation:
             header=Header(
                 sender=Sender(sender_name="Test Publisher"),
                 sent_date_time="20231201T120000Z",
-                datestamp="20231201",
-                sourcename="HeaderSource",
-                sourcetype="01",
             ),
-            products=[Product()],
+            products=[make_product()],
             datestamp="20231201",
             sourcename="MessageSource",
             sourcetype="01",
@@ -388,7 +432,7 @@ class TestPydanticToXMLValidation:
         msg = ONIXMessage(
             release="3.1",
             header=make_header(),
-            products=[Product()],
+            products=[make_product()],
         )
 
         xml_file = tmp_path / "output.xml"
