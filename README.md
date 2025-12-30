@@ -189,7 +189,7 @@ pip install -e ".[dev]"
 
 ```bash
 # Run all tests with coverage
-uv run pytest --cov=src/onix --cov-report=term-missing --cov-report=html
+uv run pytest
 
 # Run specific test categories
 uv run pytest tests/core/         # Core model tests

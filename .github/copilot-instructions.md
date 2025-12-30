@@ -74,7 +74,7 @@ uv sync
 ### Testing
 ```bash
 # Run all tests
-uv run pytest --cov=src/onix --cov-report=term-missing --cov-report=html
+uv run pytest
 
 # Test markers:
 # - @pytest.mark.slow - slower tests
