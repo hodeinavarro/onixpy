@@ -68,6 +68,15 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Run tests and generate JUnit XML
+        run: uv run pytest --cov=src/onix --junitxml=junit.xml -o junit_family=legacy -v
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   type-check:
     name: Type Check
     runs-on: ubuntu-latest
