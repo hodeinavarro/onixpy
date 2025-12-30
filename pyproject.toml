@@ -69,6 +69,8 @@ addopts = [
     "-v",                    # Verbose
     "--strict-markers",      # Strict marker usage
     "--tb=short",           # Shorter traceback format
+    "--cov",
+    "--cov-report=term-missing",
 ]
 markers = [
     "slow: marks tests as slow",
@@ -76,7 +78,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["src/onix"]
 omit = [
     "*/tests/*",
     "*/__pycache__/*",

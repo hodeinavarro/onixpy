@@ -1,0 +1,16 @@
+coverage:
+  precision: 2
+  round: nearest
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+
+ignore:
+  - "tests/**/*"
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: true
