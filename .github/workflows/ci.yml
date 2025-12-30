@@ -61,7 +61,12 @@ jobs:
         run: uv sync --dev
 
       - name: Run tests with coverage
-        run: uv run pytest --cov=src/onix --cov-report=xml --cov-report=term-missing -v --tb=short
+        run: uv run pytest --cov=src/onix --cov-branch --cov-report=xml --cov-report=term-missing -v
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   type-check:
     name: Type Check
