@@ -22,6 +22,12 @@ class RNGValidationError(Exception):
     """Raised when XML fails RNG validation."""
 
     def __init__(self, message: str, errors: list[str] | None = None):
+        """Initialize validation error with message and optional error details.
+
+        Args:
+            message: The main error message
+            errors: Optional list of detailed validation error messages
+        """
         super().__init__(message)
         self.errors = errors or []
 

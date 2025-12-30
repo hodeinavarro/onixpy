@@ -36,6 +36,9 @@ jobs:
       - name: Run ruff format check
         run: uv run ruff format --check .
 
+      - name: Run pydocstyle
+        run: uv run pydocstyle src/onix
+
   test:
     name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
@@ -60,8 +63,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Run tests with coverage and JUnit
-        run: uv run pytest --cov=src/onix --cov-branch --cov-report=xml --cov-report=term-missing --junitxml=junit.xml -v
+      - name: Run tests with coverage and generate JUnit XML
+        run: uv run pytest --cov=src/onix --cov-branch --cov-report=xml --cov-report=term-missing --junitxml=junit.xml -o junit_family=legacy -v
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -70,10 +73,11 @@ jobs:
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./junit.xml
+          report_type: test_results
+          files: ./junit.xml
 
   type-check:
     name: Type Check

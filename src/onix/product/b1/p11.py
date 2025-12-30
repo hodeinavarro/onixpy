@@ -24,16 +24,22 @@ class Measure(ONIXModel):
 
     measure_type: str = Field(
         alias="MeasureType",
-        json_schema_extra={"short_tag": "x315"},
+        json_schema_extra={
+            "short_tag": "x315",
+        },
     )
     measurement: str = Field(
         alias="Measurement",
         max_length=6,
-        json_schema_extra={"short_tag": "c094"},
+        json_schema_extra={
+            "short_tag": "c094",
+        },
     )
     measure_unit_code: str = Field(
         alias="MeasureUnitCode",
-        json_schema_extra={"short_tag": "c095"},
+        json_schema_extra={
+            "short_tag": "c095",
+        },
     )
 
     @field_validator("measure_type")

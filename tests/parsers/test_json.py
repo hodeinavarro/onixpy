@@ -17,6 +17,13 @@ class TestJSONNormalizationAndKeyConversion:
         with pytest.raises(FileNotFoundError):
             _normalize_input("/nonexistent/file.json")
 
+    def test_normalize_input_pathlike_file_not_found(self):
+        """Non-existent PathLike files raise FileNotFoundError."""
+        from pathlib import Path
+
+        with pytest.raises(FileNotFoundError):
+            _normalize_input(Path("/nonexistent/file.json"))
+
     def test_normalize_input_iterable_empty(self):
         """Empty iterable produces default structure."""
         data = _normalize_input([])
@@ -36,3 +43,21 @@ class TestJSONNormalizationAndKeyConversion:
         assert "header" in converted
         assert "x507" in converted
         assert converted["header"]["sender"]["x298"] == "X"
+
+    def test_convert_reference_to_short_with_lists(self):
+        """Converting reference tags to short names works with nested lists."""
+        data = {
+            "Header": {"Sender": {"SenderName": "X"}},
+            "Product": [
+                {"RecordReference": "123", "NotificationType": "03"},
+                {"RecordReference": "456", "NotificationType": "02"},
+            ],
+        }
+        converted = _convert_reference_to_short(data)
+        assert "header" in converted
+        assert "product" in converted
+        assert len(converted["product"]) == 2
+        assert converted["product"][0]["a001"] == "123"
+        assert converted["product"][0]["a002"] == "03"
+        assert converted["product"][1]["a001"] == "456"
+        assert converted["product"][1]["a002"] == "02"

@@ -85,6 +85,7 @@ uv run pytest --cov=src/onix --cov-report=term-missing --cov-report=html
 ```bash
 uv run ruff check .
 uv run ruff format .
+uv run pydocstyle
 ```
 
 ### Type Checking

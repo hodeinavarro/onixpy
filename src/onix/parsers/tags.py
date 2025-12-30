@@ -38,34 +38,29 @@ def _build_tag_mappings() -> None:
     )
     from onix.message import ONIXMessage
     from onix.product import Product, ProductIdentifier
+    from onix.product.b1 import (
+        DescriptiveDetail,
+        EpubLicense,
+        EpubLicenseDate,
+        EpubLicenseExpression,
+        EpubUsageConstraint,
+        EpubUsageLimit,
+        ProductClassification,
+        ProductFormFeature,
+    )
+    from onix.product.b1.p11 import Measure
 
-    # Try to import Block 1 models if they exist
-    try:
-        from onix.product.b1 import (
-            DescriptiveDetail,
-            EpubLicense,
-            EpubLicenseDate,
-            EpubLicenseExpression,
-            EpubUsageConstraint,
-            EpubUsageLimit,
-            ProductClassification,
-            ProductFormFeature,
-        )
-        from onix.product.b1.p11 import Measure
-
-        block1_models = [
-            DescriptiveDetail,
-            ProductFormFeature,
-            EpubUsageLimit,
-            EpubUsageConstraint,
-            EpubLicenseDate,
-            EpubLicenseExpression,
-            EpubLicense,
-            ProductClassification,
-            Measure,
-        ]
-    except ImportError:
-        block1_models = []
+    block1_models = [
+        DescriptiveDetail,
+        ProductFormFeature,
+        EpubUsageLimit,
+        EpubUsageConstraint,
+        EpubLicenseDate,
+        EpubLicenseExpression,
+        EpubLicense,
+        ProductClassification,
+        Measure,
+    ]
 
     models = [
         ONIXMessage,
