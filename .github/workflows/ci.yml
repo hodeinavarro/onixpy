@@ -60,22 +60,20 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Run tests with coverage
-        run: uv run pytest --cov=src/onix --cov-branch --cov-report=xml --cov-report=term-missing -v
+      - name: Run tests with coverage and JUnit
+        run: uv run pytest --cov=src/onix --cov-branch --cov-report=xml --cov-report=term-missing --junitxml=junit.xml -v
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Run tests and generate JUnit XML
-        run: uv run pytest --cov=src/onix --junitxml=junit.xml -o junit_family=legacy -v
-
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./junit.xml
 
   type-check:
     name: Type Check
