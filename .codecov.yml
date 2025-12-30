@@ -9,8 +9,3 @@ coverage:
 
 ignore:
   - "tests/**/*"
-
-parsers:
-  gcov:
-    branch_detection:
-      conditional: true
