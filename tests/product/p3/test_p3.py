@@ -164,7 +164,7 @@ class TestEpubLicenseExpressionValidation:
         """Proprietary type (01) requires EpubLicenseExpressionTypeName."""
         with pytest.raises(
             ValueError,
-            match="epub_license_expression_type_name is required when",
+            match="IDTypeName is required for proprietary EpubLicenseExpressionType '01'",
         ):
             p3.EpubLicenseExpression(
                 EpubLicenseExpressionType="01",  # Proprietary
@@ -546,6 +546,36 @@ class TestDescriptiveDetailValidation:
             Measure=[m1, m2],
         )
         assert len(dd.measures) == 2
+
+    def test_invalid_measure_type_format(self):
+        """MeasureType must be exactly 2 digits."""
+        with pytest.raises(ValueError, match="must be exactly 2 digits"):
+            Measure(MeasureType="1", Measurement="10", MeasureUnitCode="mm")
+
+    def test_invalid_measure_type_code(self):
+        """MeasureType must be valid List 48 code."""
+        with pytest.raises(ValueError, match="not a valid List 48 code"):
+            Measure(MeasureType="99", Measurement="10", MeasureUnitCode="mm")
+
+    def test_invalid_measurement_negative(self):
+        """Measurement must be positive."""
+        with pytest.raises(ValueError, match="must be positive"):
+            Measure(MeasureType="01", Measurement="-5", MeasureUnitCode="mm")
+
+    def test_invalid_measurement_non_numeric(self):
+        """Measurement must be a valid number."""
+        with pytest.raises(ValueError, match="must be a valid number"):
+            Measure(MeasureType="01", Measurement="abc", MeasureUnitCode="mm")
+
+    def test_invalid_measure_unit_code_format(self):
+        """MeasureUnitCode must be exactly 2 letters."""
+        with pytest.raises(ValueError, match="must be exactly 2 letters"):
+            Measure(MeasureType="01", Measurement="10", MeasureUnitCode="1")
+
+    def test_invalid_measure_unit_code_code(self):
+        """MeasureUnitCode must be valid List 50 code."""
+        with pytest.raises(ValueError, match="not a valid List 50 code"):
+            Measure(MeasureType="01", Measurement="10", MeasureUnitCode="ZZ")
 
     # Comprehensive valid instance
     def test_valid_comprehensive_descriptive_detail(self):

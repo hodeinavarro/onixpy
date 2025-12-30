@@ -38,36 +38,19 @@ from onix.parsers.fields import (
     tag_to_field_name,
 )
 from onix.parsers.tags import to_reference_tag, to_short_tag
-
-# Import Product after all composites to avoid circular imports
-from onix.product import Product
-from onix.product.b1 import (
-    AffiliationIdentifier,
-    AlternativeName,
-    Collection,
-    Contributor,
-    ContributorDate,
-    ContributorPlace,
+from onix.product import Product, ProductIdentifier
+from onix.product.b1.p1 import RecordSourceIdentifier
+from onix.product.b1.p2 import Barcode
+from onix.product.b1.p3 import (
     DescriptiveDetail,
     EpubLicense,
     EpubLicenseDate,
     EpubLicenseExpression,
     EpubUsageConstraint,
     EpubUsageLimit,
-    Extent,
-    Measure,
-    NameIdentifier,
-    Prize,
     ProductClassification,
     ProductFormFeature,
-    ProfessionalAffiliation,
-    TitleDetail,
-    TitleElement,
-    Website,
 )
-from onix.product.b4 import Publisher, PublishingDate, PublishingDetail
-from onix.product.b5 import RelatedMaterial, RelatedProduct
-from onix.product.product import ProductBase, ProductIdentifier
 
 if TYPE_CHECKING:
     from lxml.etree import _Element as Element
@@ -88,25 +71,13 @@ def _register_models() -> None:
     register_model(AddresseeIdentifier)
 
     # Product and identifiers
-    register_model(ProductBase)
     register_model(Product)  # Register the full Product class with block fields
     register_model(ProductIdentifier)
 
+    # P.1 Record source composites
+    register_model(RecordSourceIdentifier)
+
     # Block 1: Product description composites
-    register_model(TitleDetail)
-    register_model(TitleElement)
-    register_model(Contributor)
-    register_model(NameIdentifier)
-    register_model(AlternativeName)
-    register_model(ContributorDate)
-    register_model(ProfessionalAffiliation)
-    register_model(AffiliationIdentifier)
-    register_model(Prize)
-    register_model(Website)
-    register_model(ContributorPlace)
-    register_model(Measure)
-    register_model(Extent)
-    register_model(Collection)
     # P.3 Product form composites
     register_model(DescriptiveDetail)
     register_model(ProductFormFeature)
@@ -117,14 +88,8 @@ def _register_models() -> None:
     register_model(EpubLicense)
     register_model(ProductClassification)
 
-    # Block 4: PublishingDetail composites
-    register_model(PublishingDetail)
-    register_model(Publisher)
-    register_model(PublishingDate)
-
-    # Block 5: RelatedMaterial composites
-    register_model(RelatedMaterial)
-    register_model(RelatedProduct)
+    # P.2.4 Barcode composite
+    register_model(Barcode)
 
     # Register plural mappings for list fields that use singular XML tags
     register_plural_mapping("Product", "products")
@@ -132,6 +97,11 @@ def _register_models() -> None:
     register_plural_mapping("SenderIdentifier", "sender_identifiers")
     register_plural_mapping("AddresseeIdentifier", "addressee_identifiers")
     register_plural_mapping("ProductIdentifier", "product_identifiers")
+    # P.1 plural mappings
+    register_plural_mapping("RecordSourceIdentifier", "record_source_identifiers")
+    register_plural_mapping("DeletionText", "deletion_texts")
+    # P.2 plural mappings
+    register_plural_mapping("Barcode", "barcodes")
 
     # DescriptiveDetail plural mappings
     register_plural_mapping("TitleDetail", "title_details")

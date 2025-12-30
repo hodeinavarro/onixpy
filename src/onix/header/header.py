@@ -13,7 +13,7 @@ from datetime import datetime
 
 from pydantic import Field, field_validator, model_validator
 
-from onix._base import ONIXModel
+from onix._base import ONIXModel, validate_proprietary_id_type
 from onix.lists import get_code
 
 
@@ -30,13 +30,17 @@ class SenderIdentifier(ONIXModel):
 
     sender_id_type: str = Field(
         alias="SenderIDType",
-        json_schema_extra={"short_tag": "m379"},
+        json_schema_extra={
+            "short_tag": "m379",
+        },
     )
     id_type_name: str | None = Field(
         default=None,
         alias="IDTypeName",
         max_length=100,
-        json_schema_extra={"short_tag": "b233"},
+        json_schema_extra={
+            "short_tag": "b233",
+        },
     )
     id_value: str = Field(
         alias="IDValue",
@@ -58,8 +62,9 @@ class SenderIdentifier(ONIXModel):
     @model_validator(mode="after")
     def _require_id_type_name_for_proprietary(self):
         """Require id_type_name when sender_id_type is '01' (proprietary)."""
-        if self.sender_id_type == "01" and not self.id_type_name:
-            raise ValueError("IDTypeName is required for proprietary SenderIDType '01'")
+        validate_proprietary_id_type(
+            self.sender_id_type, self.id_type_name, "SenderIDType"
+        )
         return self
 
 
@@ -80,31 +85,41 @@ class Sender(ONIXModel):
     sender_identifiers: list[SenderIdentifier] = Field(
         default_factory=list,
         alias="SenderIdentifier",
-        json_schema_extra={"short_tag": "senderidentifier"},
+        json_schema_extra={
+            "short_tag": "senderidentifier",
+        },
     )
     sender_name: str | None = Field(
         default=None,
         alias="SenderName",
         max_length=50,
-        json_schema_extra={"short_tag": "x298"},
+        json_schema_extra={
+            "short_tag": "x298",
+        },
     )
     contact_name: str | None = Field(
         default=None,
         alias="ContactName",
         max_length=300,
-        json_schema_extra={"short_tag": "x299"},
+        json_schema_extra={
+            "short_tag": "x299",
+        },
     )
     telephone_number: str | None = Field(
         default=None,
         alias="TelephoneNumber",
         max_length=20,
-        json_schema_extra={"short_tag": "j270"},
+        json_schema_extra={
+            "short_tag": "j270",
+        },
     )
     email_address: str | None = Field(
         default=None,
         alias="EmailAddress",
         max_length=100,
-        json_schema_extra={"short_tag": "j272"},
+        json_schema_extra={
+            "short_tag": "j272",
+        },
     )
 
     @model_validator(mode="after")
@@ -135,17 +150,23 @@ class AddresseeIdentifier(ONIXModel):
 
     addressee_id_type: str = Field(
         alias="AddresseeIDType",
-        json_schema_extra={"short_tag": "m380"},
+        json_schema_extra={
+            "short_tag": "m380",
+        },
     )
     id_type_name: str | None = Field(
         default=None,
         alias="IDTypeName",
         max_length=100,
-        json_schema_extra={"short_tag": "b233"},
+        json_schema_extra={
+            "short_tag": "b233",
+        },
     )
     id_value: str = Field(
         alias="IDValue",
-        json_schema_extra={"short_tag": "b244"},
+        json_schema_extra={
+            "short_tag": "b244",
+        },
     )
 
     @field_validator("addressee_id_type")
@@ -165,10 +186,9 @@ class AddresseeIdentifier(ONIXModel):
     @model_validator(mode="after")
     def _require_id_type_name_for_proprietary(self):
         """Require id_type_name when addressee_id_type is '01' (proprietary)."""
-        if self.addressee_id_type == "01" and not self.id_type_name:
-            raise ValueError(
-                "IDTypeName is required for proprietary AddresseeIDType '01'"
-            )
+        validate_proprietary_id_type(
+            self.addressee_id_type, self.id_type_name, "AddresseeIDType"
+        )
         return self
 
 
@@ -189,31 +209,41 @@ class Addressee(ONIXModel):
     addressee_identifiers: list[AddresseeIdentifier] = Field(
         default_factory=list,
         alias="AddresseeIdentifier",
-        json_schema_extra={"short_tag": "addresseeidentifier"},
+        json_schema_extra={
+            "short_tag": "addresseeidentifier",
+        },
     )
     addressee_name: str | None = Field(
         default=None,
         alias="AddresseeName",
         max_length=50,
-        json_schema_extra={"short_tag": "x300"},
+        json_schema_extra={
+            "short_tag": "x300",
+        },
     )
     contact_name: str | None = Field(
         default=None,
         alias="ContactName",
         max_length=300,
-        json_schema_extra={"short_tag": "x299"},
+        json_schema_extra={
+            "short_tag": "x299",
+        },
     )
     telephone_number: str | None = Field(
         default=None,
         alias="TelephoneNumber",
         max_length=20,
-        json_schema_extra={"short_tag": "j270"},
+        json_schema_extra={
+            "short_tag": "j270",
+        },
     )
     email_address: str | None = Field(
         default=None,
         alias="EmailAddress",
         max_length=100,
-        json_schema_extra={"short_tag": "j272"},
+        json_schema_extra={
+            "short_tag": "j272",
+        },
     )
 
 
@@ -237,49 +267,67 @@ class Header(ONIXModel):
 
     sender: Sender = Field(
         alias="Sender",
-        json_schema_extra={"short_tag": "sender"},
+        json_schema_extra={
+            "short_tag": "sender",
+        },
     )
     addressees: list[Addressee] = Field(
         default_factory=list,
         alias="Addressee",
-        json_schema_extra={"short_tag": "addressee"},
+        json_schema_extra={
+            "short_tag": "addressee",
+        },
     )
     message_number: str | None = Field(
         default=None,
         alias="MessageNumber",
         max_length=8,
-        json_schema_extra={"short_tag": "m180"},
+        json_schema_extra={
+            "short_tag": "m180",
+        },
     )
     message_repeat: str | None = Field(
         default=None,
         alias="MessageRepeat",
         max_length=4,
-        json_schema_extra={"short_tag": "m181"},
+        json_schema_extra={
+            "short_tag": "m181",
+        },
     )
     sent_date_time: str = Field(
         alias="SentDateTime",
-        json_schema_extra={"short_tag": "x307"},
+        json_schema_extra={
+            "short_tag": "x307",
+        },
     )
     message_note: str | None = Field(
         default=None,
         alias="MessageNote",
         max_length=500,
-        json_schema_extra={"short_tag": "m183"},
+        json_schema_extra={
+            "short_tag": "m183",
+        },
     )
     default_language_of_text: str | None = Field(
         default=None,
         alias="DefaultLanguageOfText",
-        json_schema_extra={"short_tag": "defaultlanguageoftext"},
+        json_schema_extra={
+            "short_tag": "defaultlanguageoftext",
+        },
     )
     default_price_type: str | None = Field(
         default=None,
         alias="DefaultPriceType",
-        json_schema_extra={"short_tag": "defaultpricetype"},
+        json_schema_extra={
+            "short_tag": "defaultpricetype",
+        },
     )
     default_currency_code: str | None = Field(
         default=None,
         alias="DefaultCurrencyCode",
-        json_schema_extra={"short_tag": "defaultcurrencycode"},
+        json_schema_extra={
+            "short_tag": "defaultcurrencycode",
+        },
     )
 
     @field_validator("sent_date_time")

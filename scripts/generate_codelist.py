@@ -306,7 +306,7 @@ def generate_list(list_number: int) -> None:
 
 
 def main() -> None:
-    """Main entry point."""
+    """Run the main entry point."""
     parser = argparse.ArgumentParser(
         description="Generate ONIX code list Python files from EDItEUR"
     )

@@ -9,12 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-try:
-    from lxml import etree
-except ImportError as e:
-    raise ImportError(
-        "lxml is required for RNG validation. Install it with: pip install lxml"
-    ) from e
+from lxml import etree
 
 if TYPE_CHECKING:
     from lxml.etree import RelaxNG, _Element
@@ -28,6 +23,12 @@ class RNGValidationError(Exception):
     """Raised when XML fails RNG validation."""
 
     def __init__(self, message: str, errors: list[str] | None = None):
+        """Initialize validation error with message and optional error details.
+
+        Args:
+            message: The main error message
+            errors: Optional list of detailed validation error messages
+        """
         super().__init__(message)
         self.errors = errors or []
 

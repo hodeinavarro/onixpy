@@ -65,5 +65,5 @@ class CodeList:
         return iter(self.entries.values())
 
     def __len__(self) -> int:
-        """Number of entries in the list."""
+        """Return the number of entries in the list."""
         return len(self.entries)

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from onix.lists.list1 import List1, NotificationOrUpdateType
 from onix.lists.list2 import List2, ProductComposition
+from onix.lists.list3 import List3, RecordSourceType
 from onix.lists.list5 import List5, ProductIdentifierType
 from onix.lists.list9 import List9, ProductClassificationType
 from onix.lists.list12 import List12, TradeCategory
@@ -46,6 +47,8 @@ from onix.lists.list91 import CountryBasedOnIso31661, List91
 from onix.lists.list96 import CurrencyCode, List96
 from onix.lists.list98 import BindingOrPageEdgeColor, List98
 from onix.lists.list99 import List99, SpecialCoverMaterial
+from onix.lists.list141 import BarcodeIndicator, List141
+from onix.lists.list142 import List142, PositionOnProduct
 from onix.lists.list144 import EpublicationTechnicalProtection, List144
 from onix.lists.list145 import List145, UsageType
 from onix.lists.list146 import List146, UsageStatus
@@ -63,6 +66,7 @@ from onix.lists.models import CodeList, CodeListEntry
 _CODE_LISTS: dict[int, CodeList] = {
     1: List1,
     2: List2,
+    3: List3,
     5: List5,
     9: List9,
     12: List12,
@@ -86,6 +90,8 @@ _CODE_LISTS: dict[int, CodeList] = {
     96: List96,
     98: List98,
     99: List99,
+    141: List141,
+    142: List142,
     144: List144,
     145: List145,
     146: List146,
@@ -154,6 +160,7 @@ __all__ = [
     # Lists by number
     "List1",
     "List2",
+    "List3",
     "List5",
     "List9",
     "List12",
@@ -177,6 +184,8 @@ __all__ = [
     "List96",
     "List98",
     "List99",
+    "List141",
+    "List142",
     "List144",
     "List145",
     "List146",
@@ -212,6 +221,9 @@ __all__ = [
     "ProductContentType",
     "CountryBasedOnIso31661",
     "CurrencyCode",
+    "RecordSourceType",
+    "BarcodeIndicator",
+    "PositionOnProduct",
     "BindingOrPageEdgeColor",
     "SpecialCoverMaterial",
     "EpublicationTechnicalProtection",

@@ -71,6 +71,47 @@ class TestInvalidCodeListValues:
             )
         assert "SenderIDType" in str(exc_info.value)
 
+    def test_invalid_sender_id_type_format(self):
+        """Invalid sender ID type format should raise ValidationError."""
+        with pytest.raises(ValidationError) as exc_info:
+            identifier = SenderIdentifier(
+                **{
+                    "SenderIDType": "1",  # Invalid: not 2 digits
+                    "IDValue": "123",
+                }
+            )
+            Header(
+                Sender=Sender(
+                    sender_name="Test",
+                    SenderIdentifier=[identifier],
+                ),
+                SentDateTime="20231201",
+            )
+        assert "SenderIDType" in str(exc_info.value)
+
+    def test_invalid_addressee_id_type_format(self):
+        """Invalid addressee ID type format should raise ValidationError."""
+        from onix import Addressee, AddresseeIdentifier
+
+        with pytest.raises(ValidationError) as exc_info:
+            identifier = AddresseeIdentifier(
+                **{
+                    "AddresseeIDType": "abc",  # Invalid: not digits
+                    "IDValue": "123",
+                }
+            )
+            Header(
+                Sender=Sender(sender_name="Test"),
+                Addressee=[
+                    Addressee(
+                        addressee_name="Test",
+                        AddresseeIdentifier=[identifier],
+                    )
+                ],
+                SentDateTime="20231201",
+            )
+        assert "AddresseeIDType" in str(exc_info.value)
+
     def test_invalid_language_code(self):
         """Invalid language code should raise ValidationError."""
         with pytest.raises(ValidationError) as exc_info:

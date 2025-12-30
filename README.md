@@ -5,6 +5,12 @@
 
 A Python library for parsing and working with ONIX for Books metadata (publishing industry standard). Built with Pydantic for type-safe data models.
 
+> [!WARNING]
+> This project is under development and unfinished. APIs may change without notice, and some features may not work as expected.
+
+> [!NOTE]
+> This project was built with the assistance of AI tools. Although AI-assisted, it is actively reviewed, tested, and validated against the ONIX specification to the best of our ability. This project originated from a real-world implementation for book management, where the ONIX standard is being integrated, and was later abstracted into this standalone package.
+
 ## Features
 
 - **ONIX 3.1 Support** - Parse and create ONIX 3.1 messages with full specification coverage

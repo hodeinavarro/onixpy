@@ -47,35 +47,16 @@ from onix.header import (
 )
 from onix.message import ONIXAttributes, ONIXMessage
 from onix.product import (
-    AffiliationIdentifier,
-    AlternativeName,
-    Collection,
-    Contributor,
-    ContributorDate,
-    ContributorPlace,
     DescriptiveDetail,
     EpubLicense,
     EpubLicenseDate,
     EpubLicenseExpression,
     EpubUsageConstraint,
     EpubUsageLimit,
-    Extent,
-    Measure,
-    NameIdentifier,
-    Prize,
     Product,
     ProductClassification,
     ProductFormFeature,
     ProductIdentifier,
-    ProfessionalAffiliation,
-    Publisher,
-    PublishingDate,
-    PublishingDetail,
-    RelatedMaterial,
-    RelatedProduct,
-    TitleDetail,
-    TitleElement,
-    Website,
 )
 
 __all__ = [
@@ -101,29 +82,4 @@ __all__ = [
     "EpubLicenseExpression",
     "EpubLicense",
     "ProductClassification",
-    # P.5 Collection
-    "Collection",
-    # P.6 Product title detail
-    "TitleDetail",
-    "TitleElement",
-    # P.7 Authorship
-    "Contributor",
-    "NameIdentifier",
-    "AlternativeName",
-    "ContributorDate",
-    "ProfessionalAffiliation",
-    "AffiliationIdentifier",
-    "Prize",
-    "Website",
-    "ContributorPlace",
-    # P.11 Extents and other content
-    "Measure",
-    "Extent",
-    # PublishingDetail composites
-    "PublishingDetail",
-    "Publisher",
-    "PublishingDate",
-    # RelatedMaterial composites
-    "RelatedMaterial",
-    "RelatedProduct",
 ]

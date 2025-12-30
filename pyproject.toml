@@ -57,6 +57,7 @@ dev = [
     "pytest>=9.0.1",
     "ruff>=0.14.10",
     "ty>=0.0.7",
+    "pydocstyle>=6.3.0",
 ]
 
 [tool.pytest.ini_options]
@@ -106,3 +107,6 @@ directory = "htmlcov"
 
 [tool.ty.src]
 include = ["src/", "tests/"]
+
+[tool.pydocstyle]
+convention = "pep257"

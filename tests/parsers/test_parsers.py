@@ -265,6 +265,11 @@ class TestXMLParser:
         with pytest.raises(FileNotFoundError):
             xml_to_message("/nonexistent/path.xml")
 
+    def test_parse_from_pathlike_not_found(self):
+        """Raise error for non-existent PathLike file."""
+        with pytest.raises(FileNotFoundError):
+            xml_to_message(Path("/nonexistent/path.xml"))
+
 
 class TestXMLSerializer:
     """Tests for XML serialization."""

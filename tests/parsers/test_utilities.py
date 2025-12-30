@@ -39,6 +39,47 @@ class TestRegisterModelAndPluralMapping:
 
         _register_models()
 
+    def test_field_overrides_functionality(self):
+        """Test that field overrides work for special cases."""
+        from onix.parsers import fields
+
+        # Clear caches to start fresh
+        fields.clear_caches()
+
+        # Save originals
+        original_field_overrides = fields._FIELD_OVERRIDES.copy()
+        original_tag_overrides = fields._TAG_OVERRIDES.copy()
+
+        try:
+            # Test tag_to_field_name override
+            fields._FIELD_OVERRIDES["SpecialTag"] = "special_field"
+
+            assert fields.tag_to_field_name("SpecialTag") == "special_field"
+            # Non-override should still work
+            assert fields.tag_to_field_name("NormalTag") == "normal_tag"
+
+            # Clear caches between sections
+            fields.clear_caches()
+
+            # Test field_name_to_tag override
+            fields._TAG_OVERRIDES["special_field"] = "SpecialTag"
+
+            assert fields.field_name_to_tag("special_field") == "SpecialTag"
+            # Non-override should still work
+            assert fields.field_name_to_tag("normal_field") == "NormalField"
+        finally:
+            # Restore original overrides
+            fields._FIELD_OVERRIDES.clear()
+            fields._FIELD_OVERRIDES.update(original_field_overrides)
+            fields._TAG_OVERRIDES.clear()
+            fields._TAG_OVERRIDES.update(original_tag_overrides)
+
+            # Clear caches and re-register models
+            fields.clear_caches()
+            from onix.parsers.xml import _register_models
+
+            _register_models()
+
 
 class TestElementToDictNormalization:
     """Tests for XML element to dictionary conversion."""
